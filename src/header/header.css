@@ -1,0 +1,88 @@
+.headerDiv {
+    background-color: #173f72;
+    display: flex;
+}
+
+.headerLogo {
+    margin: 0.8vw;
+    flex: 2;
+}
+
+.middleHeaderDiv {
+    flex: 10;
+}
+
+.rightHeaderDiv {
+    margin-top: 1.8%;
+    flex: 1.4;
+    display: flex;
+}
+
+.dropdownDiv {
+    flex: 100;
+    display: flex;
+}
+
+.dropdownButton {
+    flex: 1;
+    height:fit-content;
+    margin-top: 2.5%;
+    background-color: #173f72;
+    border: none;
+    font-size: medium;
+    color: white;
+}
+
+.dropdownFiller {
+    flex: 6;
+}
+
+.dropdownLabel {
+    display: flex;
+    flex: 1;
+    height:fit-content;
+    margin-top: 2.5%;
+    background-color: #173f72;
+    border: none;
+    font-size: medium;
+    color: white;
+}
+
+.headerAnchor {
+    display: inline-block;
+    flex: 0.4;
+    height:fit-content;
+    margin-top: 2.5%;
+    background-color: #173f72;
+    border: none;
+    font-size: medium;
+    color: white;
+    text-decoration: none;
+    position: relative;
+}
+
+.patientsAnchor {
+    left:1vw;
+}
+
+.consultationsAnchor {
+    left: 2vw;
+}
+
+.reportsAnchor {
+    left: 3vw;
+}
+
+.dropdownSelect {
+    flex: 1;
+    height:fit-content;
+    background-color: #173f72;
+    border: none;
+    font-size: medium;
+    color: white;
+    margin-right: 100%;
+}
+
+.dullOption {
+    display: none;
+}

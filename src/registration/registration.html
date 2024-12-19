@@ -1,0 +1,32 @@
+<div id="mainContainer">
+    <div class="flexContainer">
+        <div class="regDiv">
+            <p class="regPar">Регистрация</p>
+            <p class="grayText">Имя</p><input id="name-input" placeholder="Иванов Иван Иванович" class="regInput">
+            <div class="flexDivHor">
+                <div class="flexDivVert">
+                    <p class="grayText">Пол</p>
+                    <select class="selectElement" id="gender-select">
+                        <option>Мужской</option>
+                        <option>Женский</option>
+                    </select>
+                </div>
+                <div class="flexDivVert">
+                    <p class="grayText">Дата рождения</p>
+                    <input type="date" id="birthday-select" />
+                </div>
+            </div>
+            <p class="grayText">Телефон</p>
+            <input placeholder="+7 (xxx) xxx xx xx" class="regInput" id="telephone-input">
+            <p class="grayText">Специалность</p>
+            <select class="selectElement" id="speciality-select">
+
+            </select>
+            <p class="grayText">Email</p>
+            <input placeholder="name@example.com" class="regInput" id="email-input">
+            <p class="grayText" id="password-input">Пароль</p>
+            <input class="regInput"><button class="lightBlueButton" id="reg-button">Зарегестрироваться</button>
+        </div>
+    </div>
+</div>
+<script type="module" src="/src/index.ts"></script>

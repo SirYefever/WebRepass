@@ -1,0 +1,950 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    gap: 5%;
+}
+
+/* For registration screen: */
+#birthDateSelector {
+    /* margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom: 2%; */
+    height: 18px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+    background-color: white;
+}
+
+/* Ultimative styling: */
+
+
+.regDiv {
+    display: flex;
+    padding-bottom: 1%;
+    padding-top: 1%;
+    flex-direction: column;
+    align-content: space-between;
+    gap: 10px;
+    flex-grow: 1;
+    max-width: 900px;
+    height: fit-content;
+    width: 30%;
+    background-color: #f6f6fb;
+    margin: 5%;
+    padding-left: 2%;
+    padding-right: 2%;
+    box-shadow: 0px 2px 3px 2px rgba(0, 0, 0, 0.5);
+    border-radius: 7px;
+}
+
+.regPar {
+    font-size: large;
+    font-weight: bold;
+}
+
+.grayText {
+    height: 1%;
+    color: grey;
+    font-size: 70%;
+    flex: 1;
+    /* margin-left: 5%;
+    margin-right: 5%; */
+}
+
+.flexDivHor {
+    display: flex;
+    flex-direction: row;
+    /* padding-left: 5%;
+    padding-right: 5%; */
+    gap: 15px;
+}
+
+.flexDivVert {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.flexContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.regInput {
+    height: 30px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+}
+
+.lightBlueButton {
+    /* margin-bottom: 2%; */
+    height: 30px;
+    min-height: 30px;
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+.selectElement {
+    /* margin-bottom: 2%; */
+    height: 30px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+    background-color: white;
+    flex-shrink: none;
+}
+
+/* For patients: */
+#regNewPatientButton {
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    margin-left: 60%;
+    margin-top: 1%;
+}
+
+#regNewPatientImage {
+    width: 270px;
+    height: auto;
+}
+
+.divForPatients {
+    width: 70%;
+}
+
+.centeredContentDiv {
+    display: flex;
+    justify-content: center;
+}
+
+.mainPatientDiv {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    /* gap:15px; */
+}
+
+.subMainPatientDiv {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    /* max-width: 900px; */
+    width:938px;
+    flex-wrap:wrap;
+    padding: 1%;
+    gap:15px;
+}
+
+.testborder {
+    border-color: black;
+    border-width: 3px;
+}
+
+.announcer {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: center;
+    max-width: 938px;
+    min-width: 100px;
+    flex-shrink: 1;
+}
+
+.announcerPar {
+    font-size: 170%;
+    font-weight: bold;
+}
+
+#announcer-button {
+    margin-bottom: 2%;
+    margin-top: 6%;
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    max-width: 300px;
+    max-height: 45px;
+
+}
+
+#filterAndSortDiv {
+    background-color: #f6f6fb;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #f6f6fb;
+    max-width: 900px;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+#filterAndSortParDiv {
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+    justify-content: start;
+    align-items: start;
+}
+
+.switch {
+    flex: 1;
+    position: relative;
+    display: inline-block;
+    height: 25px;
+    max-width: 53px;
+    min-width: 53px;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.textAcrossSwitch {
+    flex: 0.2;
+    font-size: small;
+    flex-grow: 1;
+    max-width: 210px;
+}
+
+#patientSortSelector {
+    max-height: 30px;
+    margin-bottom: 18px;
+    min-height: 27px;
+}
+
+#div47 {
+    justify-content: center;
+    min-height: 100px;
+}
+
+#sortPatientsPar {
+    margin-left: 15px;
+}
+
+#verticalDiv {
+    display: flex;
+    flex-direction: column;
+}
+
+.div1 {
+    display: flex;
+    flex-direction: column;
+    flex-wrap:wrap;
+    /* padding-left: 5%;
+    padding-right: 5%; */
+}
+
+.div2 {
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+}
+
+.div3 {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 63px;
+    /* flex-wrap: wrap; */
+}
+
+.div4 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    flex: 1;
+}
+
+.dull1 {
+    flex-grow: 1;
+    flex: 1;
+    min-height: 10px;
+}
+
+.div201 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.div202 {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.patientDiv {
+    background-color: #f6f6fb;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    flex-grow: 1;
+    max-width: 1100px;
+    min-width: 400px;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 2%;
+}
+
+.patientNamePar {
+    font-weight: bold;
+    font-size: 90%;
+    margin-left: 25px;
+}
+
+.patientInfoDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    flex-shrink: 1;
+}
+
+.patientPropertyDiv {
+    display: flex;
+    margin-top:-10px;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.patientPropertyPar {
+    flex: 1;
+    font-size: 90%;
+    margin-left: 6px;
+}
+
+.patientPropertyNamePar {
+    height: 1%;
+    color: grey;
+    font-size: 90%;
+    margin-left: 25px;
+}
+
+.patientList {
+    display:flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 938px;
+    gap: 30px; 
+    flex-grow: 1;
+}
+
+#pageSelectorDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    flex-grow: 1;
+    /* width:1200px; */
+    max-width: 900px;
+}
+
+.pageElementToSelect {
+    border: 1px solid #b3b3b3;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+}
+
+.pageNumberPar {
+    font-size: 70%;
+    color: black;
+}
+
+.pageNumberDirectionPar {
+    font-size: 100%;
+    color: #b3b3b3;
+}
+
+.anchorForPageSelection {
+    text-decoration: none;
+}
+
+#sexSelector {
+    flex: 1;
+}
+
+#div203 {
+    display: flex;
+    flex: 1;
+    justify-content: start;
+}
+
+#div204 {
+    display: flex;
+    flex: 1;
+    justify-content: end;
+}
+
+#patientSortingPar {
+    color: grey;
+    font-size: 70%;
+    flex: 1;
+}
+
+.div205 {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: 12px;
+}
+
+.div208 {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+
+
+.div206 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    max-width: 900px;
+    flex-shrink: 1;
+    width:100%;
+}
+
+
+.div207 {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.flex201 {
+    flex: 1;
+}
+
+#addNewInspectionButton {
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    margin-top: 4%;
+    width: 150px;
+    height: 40px;
+}
+
+#div209 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    max-width: 900px;
+    flex-shrink: 1;
+    width:100%;
+}
+
+.div210 {
+    background-color: #f6f6fb;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #f6f6fb;
+    max-width: 900px;
+    padding: 10px 20px 10px 20px;
+}
+
+.div211 {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 30px;
+}
+
+.grayTextSmall {
+    color:gray;
+    font-size: small;
+}
+
+.selectColorSize {
+    height: 30px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+    background-color: white;
+    flex: 1;
+}
+
+.div212 {
+    flex: 1;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap:10px;
+}
+
+.buttonStyle {
+    height: 30px;
+    min-height: 30px;
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+.flex202 {
+    flex: 3;
+}
+
+.maxWidth {
+    width: 100%;
+}
+
+.width201 {
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+.diagnosisDiv {
+    background-color: #f6f6fb;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #f6f6fb;
+    max-width: 900px;
+    padding: 10px 20px 10px 20px;
+}
+
+.div213 {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    justify-content: start;
+}
+
+.div214 {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: end;
+    max-height: 100px;
+    gap: 15px;
+    padding-top: 20px;
+}
+
+.a201 {
+    text-decoration: none;
+    color:#2279b4;
+}
+
+/* Creating inpecction */
+
+.div215 {
+    display:flex;
+    align-items: center;
+}
+
+.div216 {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
+}
+
+.div217 {
+    display:flex;
+    flex-direction: column;
+}
+
+.calendar2{
+    height: 30px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+    background-color: white;
+    max-width: 350px;
+}
+
+.darkBlueHeaderPar {
+    color:#032368;
+}
+
+.input201 {
+    max-height: 40px;
+    width: 100%;
+    height: 100%;
+}
+
+.div218 {
+    background-color: #f6f6fb;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #f6f6fb;
+    max-width: 900px;
+    padding: 10px 20px 10px 20px;
+    height: 120px;
+}
+
+.div219 {
+    background-color: #f6f6fb;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #f6f6fb;
+    max-width: 900px;
+    padding: 10px 20px 10px 20px;
+}
+
+.div220 {
+    display: flex;
+    flex: 1;
+    justify-content: start;
+    gap: 15px;
+}
+
+.div221 {
+    display: flex;
+    flex-direction: column;
+}
+
+.input202 {
+    max-height: 40px;
+    width: 100%;
+    
+}
+
+.div222 {
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    height: 120px;
+}
+
+.button201 {
+    max-width: 200px;
+    margin-top: 10px;
+}
+
+
+.div223 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
+    gap: 5px;
+}
+
+.div224 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.div225 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.div226 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.div227 {
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    height: 50px;
+}
+
+.div228 {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.div229 {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+}
+
+
+.select201 {
+    height: 30px;
+    max-width: 100px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+    background-color: white;
+}
+
+.input203 {
+    margin-bottom: 2%;
+    height: 30px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: gray;
+    box-shadow: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 120px;
+    overflow-y: auto;
+    max-height: 100px;
+    border: 1px solid #ddd;
+    z-index: 1;
+}
+
+.dropdown-content label {
+    display: block;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.dropdown-content label:hover {
+    background-color: #ddd;
+}
+
+.show {
+    display: block;
+}
+
+.selected-items {
+    width: 100px;
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.selected-items div {
+    margin-bottom: 5px;
+}
+
+.div230 {
+    display: flex;
+    flex-direction: column;
+    align-content:space-around;
+}
+
+.div231 {
+    display: flex;
+    flex: 1;
+    justify-content: start;
+}
+
+.div232 {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    flex: 1;
+    justify-content: end;
+}
+
+.button202 {
+    width: 200px;
+}
+
+.select202 {
+    width: 200px;
+}
+
+.div233 {
+    /* padding-left: 5%;
+    padding-right: 5%; */
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: center;
+    max-width: 900px;
+    min-width: 100px;
+    flex-shrink: 1;
+}
+
+.button203 {
+    margin-top: 2%;
+}
+
+/* Overlay window */
+/* https://medium.com/@angelawong_80360/how-to-create-a-pop-up-window-using-next-js-typescript-styled-components-e795890256d7 */
+
+.click-button { 
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    width: 90px;
+    text-align: center;
+    background-color: #2279b4;
+    height: 30px;
+    min-height: 30px;
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+.popup-div {
+    width: 500px;
+    position: absolute;
+    left: 29%;;
+    top: 35%;
+    margin-left: -150px;
+    background-color: #f6f6fb;
+    transform: translateY(-50%);
+    display: flex;
+    padding-bottom: 1%;
+    /* padding-top: 1%; */
+    padding-left: 2%;
+    padding-right: 2%;
+    flex-direction: column;
+    align-content: space-between;
+    gap: 10px;
+    flex-grow: 1;
+    max-width: 900px;
+    height: fit-content;
+    /* width: 30%; */
+    background-color: #f6f6fb;
+    margin: 5%;
+    box-shadow: 0px 2px 3px 2px rgba(0, 0, 0, 0.5);
+    border-radius: 7px;
+}
+
+.overlay-div {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(35, 46, 80, 0.8);
+}
+
+.div234 {
+    display: flex;
+    flex-direction: column;
+    /* flex: 1; */
+    gap: 0px;
+}
+
+.par201 {
+    font-size: 180%;
+    font-weight: bold;
+}
+
+.div235 {
+    max-height: 40px;
+}
+
+.anchor201 {
+  color: black;
+  text-decoration: none; /* Remove underline */
+}
+
+.select203 {
+    max-width: 400px;
+}
+
+.par202 {
+    font-size: small;
+}
+
+.div236 {
+
+}
