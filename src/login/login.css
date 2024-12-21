@@ -1,4 +1,4 @@
-.flexContainer {
+.flex-container {
     display: flex;
     justify-content: center;
 }
@@ -16,30 +16,33 @@
     box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 1);
 }
 
-.regPar {
-    font-size: 300%;
-    font-weight: 500;
+.reg-par {
+    font-size: large;
+    font-weight: bold;
     font-family: "Montserrat", serif;
 }
 
-.black-text {
-    height: 1%;
-    color: black;
-    font-size: 120%;
-    flex: 1;
+.gray-text-small {
+    color:gray;
+    font-size: small;
+    font-family: "Montserrat", serif;
 }
 
-.gray-text {
-    height: 1%;
-    color: gray;
-    font-size: 100%;
-    flex: 1;
-}
-
-.regInput {
+.reg-input {
     height: 30px;
     border-radius: 4px;
     border-width: 1px;
     border-color: gray;
     box-shadow: none;
+}
+
+.light-blue-button {
+    height: 30px;
+    min-height: 30px;
+    background-color: #2279b4;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-family: "Montserrat", serif;
 }

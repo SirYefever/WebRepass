@@ -171,6 +171,11 @@ interface SpecialityGetResponse {
   pagination: Pagination;
 }
 
+interface UserLoginModel {
+  email: string,
+  password: string
+}
 
-export type {UserRegisterModel, SpecialityGetResponse, SpecialityModel, Gender, UserRegisterModel as DoctorRegisterModel, PatientInspectionResponse, InspectionModel, Icd10RecordModel, PatientModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse, PatientsGetApiInterface, PatientPagedListModel as ResponsePatientsGetApi, Patient, PatientPagedListModel, PatientCreateModel }
+
+export type {UserLoginModel, UserRegisterModel, SpecialityGetResponse, SpecialityModel, Gender, UserRegisterModel as DoctorRegisterModel, PatientInspectionResponse, InspectionModel, Icd10RecordModel, PatientModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse, PatientsGetApiInterface, PatientPagedListModel as ResponsePatientsGetApi, Patient, PatientPagedListModel, PatientCreateModel }
 export {GenderEnum}
