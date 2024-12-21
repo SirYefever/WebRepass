@@ -111,14 +111,12 @@ interface DoctorModel {
   phone?: string,
 }
 
-interface DoctorRegisterModel {
-  name?: string,
-  password?: string,
-  speciality?: string,
-  birthday?: string,
-  gender?: GenderEnum,
+interface UserRegisterModel {
+  fullName?: string,
+  birthDate?: string,
   email?: string,
-  phone?: string,
+  password?: string,
+  confirmPassword?: string,
 }
 
 interface SpecialityModel {
@@ -174,5 +172,5 @@ interface SpecialityGetResponse {
 }
 
 
-export type {SpecialityGetResponse, SpecialityModel, Gender, DoctorRegisterModel, PatientInspectionResponse, InspectionModel, Icd10RecordModel, PatientModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse, PatientsGetApiInterface, PatientPagedListModel as ResponsePatientsGetApi, Patient, PatientPagedListModel, PatientCreateModel }
+export type {UserRegisterModel, SpecialityGetResponse, SpecialityModel, Gender, UserRegisterModel as DoctorRegisterModel, PatientInspectionResponse, InspectionModel, Icd10RecordModel, PatientModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse, PatientsGetApiInterface, PatientPagedListModel as ResponsePatientsGetApi, Patient, PatientPagedListModel, PatientCreateModel }
 export {GenderEnum}

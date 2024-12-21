@@ -1,4 +1,15 @@
-#test {
+.welcome-div {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;
     align-content: center;
+}
+
+.welcome-par {
+    font-family: "Montserrat", serif;
+    font-size: 100px;
+    font-weight: 300;
+    max-width: 90%;
+    text-align: center;
 }

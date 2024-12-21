@@ -1,11 +1,13 @@
 import registrationHtml from './registration.html?raw'
-import { DoctorRegisterModel } from '../api/interfaces'
+import { UserRegisterModel } from '../api/interfaces'
 import { GenderEnum } from '../api/interfaces'
 import { SpecialityGetResponse } from '../api/interfaces'
-import { constructPage } from '../index/index'
-async function registerDoctorQuery(requestBody: DoctorRegisterModel) {
+import { constructPage, constructPage2 } from '../index/index'
+import { AuthData } from '../LocalDataStorage'
+
+async function registerUserQuery(requestBody: UserRegisterModel) {
     let result = null;
-    const response = await fetch("https://mis-api.kreosoft.space/api/doctor/register", {
+    const response = await fetch("https://camp-courses.api.kreosoft.space/registration", {
         method: "POST",
         body: JSON.stringify(requestBody),
         headers: {
@@ -18,49 +20,25 @@ async function registerDoctorQuery(requestBody: DoctorRegisterModel) {
     throw response;
 }
 
-async function getSpecialities(): Promise<SpecialityGetResponse> {
-    const response = await fetch("https://mis-api.kreosoft.space/api/dictionary/speciality?page=1&size=100", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-    if (response.ok) {
-        return (await response.json()) as SpecialityGetResponse;
-    }
-    throw response;
-}
-
 async function regButtonOnclick() {
-    let name = (document.getElementById("name-input") as HTMLInputElement).value;
-    let gender = (document.getElementById("name-input") as HTMLSelectElement).value;
-    let birthday = (document.getElementById("name-input") as HTMLSelectElement).value;
-    let telephone = (document.getElementById("name-input") as HTMLInputElement).value;
-    let speciality = (document.getElementById("name-input") as HTMLSelectElement).value;
-    let email = (document.getElementById("name-input") as HTMLInputElement).value;
-    let password = (document.getElementById("name-input") as HTMLInputElement).value;
-    let doctorRegModel: DoctorRegisterModel = {};
-    doctorRegModel!.name = name;
-    doctorRegModel!.gender = gender === "Мужчина" ? GenderEnum.Male : GenderEnum.Female;
-    doctorRegModel!.birthday = birthday;
-    doctorRegModel!.phone = telephone;
-    doctorRegModel!.speciality = speciality;
-    doctorRegModel!.email = email;
-    doctorRegModel!.password = password;
-    registerDoctorQuery(doctorRegModel);
+    let fullName = (document.getElementById("name-input") as HTMLInputElement).value;
+    let birthDate = (document.getElementById("birthday-select") as HTMLSelectElement).value;
+    let email = (document.getElementById("email-input") as HTMLInputElement).value;
+    let password = (document.getElementById("password-input") as HTMLInputElement).value;
+    let confirmPassword = (document.getElementById("confirm-password-input") as HTMLInputElement).value;
+    let userRegModel: UserRegisterModel = {};
+    userRegModel!.fullName = fullName;
+    userRegModel!.birthDate = birthDate;
+    userRegModel!.email = email;
+    userRegModel!.password = password;
+    userRegModel!.confirmPassword = confirmPassword;
+    const token = await registerUserQuery(userRegModel);
+    const storage = new AuthData();
+    storage.token = token;
 }
 
 async function constructRegPage() {
-    constructPage(registrationHtml);
-
-    let specialities = (await getSpecialities() as SpecialityGetResponse).specialities;
-    let specialitySelect = document.getElementById("speciality-select");
-    specialities.forEach((element) => {
-        let optionEl = document.createElement("option");
-        optionEl.textContent = element.name!;
-        specialitySelect?.appendChild(optionEl);
-    });
-
+    constructPage2(registrationHtml, "/src/registration/registration.css");
     let regButton = document.getElementById("reg-button");
     regButton!.onclick = regButtonOnclick;
 }

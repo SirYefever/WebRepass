@@ -56,7 +56,7 @@ router.template('root', function () {
 
 router.route('/', 'root');
 
-// router.route('/register', 'register');
+// router.route('/register', eregister');
 
 function constructPage(innerHTML: string) {
     if (mainContainer !== null) {
@@ -74,11 +74,35 @@ function constructPage(innerHTML: string) {
 
 }
 
+function constructPage2(innerHTML: string, cssFile: string) {
+    if (mainContainer !== null) {
+        mainContainer.innerHTML = "";
+    }
+    const headerDiv = document.createElement("div");
+    headerDiv.id = "header-div";
+    const subMainContainer = document.createElement("div");
+    subMainContainer.id = "sub-main-container";
+
+    subMainContainer!.innerHTML = innerHTML;
+
+    mainContainer?.appendChild(headerBuilder());
+    mainContainer?.appendChild(subMainContainer);
+
+    loadCSS(cssFile);
+}
+
 function refillSubMainContainer(innerHTML: string) {
     if (!(subMainContainer === null)) {
         console.log("refill fired");
         subMainContainer!.innerHTML = innerHTML;
     }
+}
+
+function loadCSS(href: string) {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = href;
+  document.head.appendChild(link);
 }
 
 // let headerContainer = document.getElementById("header-div");
@@ -95,4 +119,4 @@ let subMainContainer: HTMLDivElement;
 window.addEventListener('load', router.retrieveRoute);
 window.addEventListener('hashchange', router.retrieveRoute);
 
-export { refillSubMainContainer, constructPage }
+export { refillSubMainContainer, constructPage, constructPage2  }

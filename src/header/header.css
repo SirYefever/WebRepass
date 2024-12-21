@@ -1,5 +1,5 @@
 .headerDiv {
-    background-color: #173f72;
+    background-color: #6c747d;
     display: flex;
 }
 
@@ -12,11 +12,6 @@
     flex: 10;
 }
 
-.rightHeaderDiv {
-    margin-top: 1.8%;
-    flex: 1.4;
-    display: flex;
-}
 
 .dropdownDiv {
     flex: 100;
@@ -49,16 +44,19 @@
 }
 
 .headerAnchor {
+    margin-right: 7%;
     display: inline-block;
-    flex: 0.4;
+    /* flex: 0.4; */
+    width: fit-content;
     height:fit-content;
-    margin-top: 2.5%;
-    background-color: #173f72;
+    background-color: #6c747d;
     border: none;
     font-size: medium;
     color: white;
     text-decoration: none;
     position: relative;
+    font-size: 170%;
+    font-family: "Montserrat", serif;
 }
 
 .patientsAnchor {
@@ -85,4 +83,25 @@
 
 .dullOption {
     display: none;
+}
+
+.website-name-par {
+    font-size: 170%;
+    margin-left: 7%;
+    color: white;
+    font-family: "Montserrat", serif;
+}
+
+.left-header-div {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.rightHeaderDiv {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
