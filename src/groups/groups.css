@@ -1,0 +1,9 @@
+#popup-stack{
+    position: sticky;
+    display: flex;
+    flex-direction: column;
+    left: 80%;
+    top: 12%;
+    width: 15%;
+    height: 5%;
+}

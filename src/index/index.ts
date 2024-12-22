@@ -84,10 +84,12 @@ function constructPage2(innerHTML: string, cssFile: string) {
     loadCSS(cssFile);
 }
 
-function addHtmlToPage(innerHTML: string, cssFile: string) {
+function addHtmlToPage(innerHTML: string, cssFile?: string) {
     const subMainContainer = document.querySelector("#sub-main-container");
     subMainContainer!.innerHTML += innerHTML;
-    loadCSS(cssFile);
+    if (cssFile) {
+        loadCSS(cssFile);
+    }
 }
 
 function refillSubMainContainer(innerHTML: string) {

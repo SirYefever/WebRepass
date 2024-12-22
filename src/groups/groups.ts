@@ -1,18 +1,24 @@
 import {addHtmlToPage, constructPage2} from "../index";
 import groupsHtml from './groups.html?raw'
-import redactPopupHtml from './redactPopup.html?raw'
-import createPopupHtml from './newGroup.html?raw'
-import deletePopupHtml from './deletePopup.html?raw'
+import redactPopupHtml from './popups/redactPopup.html?raw'
+import createPopupHtml from './popups/newGroup.html?raw'
+import deletePopupHtml from './popups/deletePopup.html?raw'
+import successPopupHtml from './popups/successPopup.html?raw'
+import failurePopupHtml from './popups/failurePopup.html?raw'
 import {AuthData} from "../LocalDataStorage.ts";
 import {CreateCampusGroupModel, EditCampusGroupModel, Group, UserRoles} from "../api/interfaces.ts";
 import {getUserRoles} from "../utils/utils.ts";
 
 
+var popupStackSize = 0;
+
 async function groupsPageConstructor(){
     constructPage2(groupsHtml, "/src/groups/groups.css");
-    addHtmlToPage(redactPopupHtml, "./src/groups/popup.css");
-    addHtmlToPage(createPopupHtml, "./src/groups/popup.css");
-    addHtmlToPage(deletePopupHtml, "./src/groups/popup.css");
+    addHtmlToPage(redactPopupHtml, "./src/groups/popups/popup.css");
+    addHtmlToPage(createPopupHtml);
+    addHtmlToPage(deletePopupHtml);
+    addHtmlToPage(successPopupHtml);
+    addHtmlToPage(failurePopupHtml);
     const curUserRoles = await getUserRoles() as UserRoles;
 
     if (curUserRoles.isAdmin){
@@ -99,8 +105,12 @@ async function createNewGroup(): Promise<void>{
         body: JSON.stringify(createModel)
     })
     if (response.ok) {
+        toggleSuccessPopup();
         displayGroupList();
         toggleCreatePopup();
+    }
+    else {
+        toggleFailurePopup();
     }
     throw response;
 }
@@ -123,7 +133,7 @@ function popupRedact(groupId: string) {
 }
 
 function toggleRedactPopup(){
-    var popup = document.getElementById("popup-span");
+    var popup = document.getElementById("redact-popup-span");
     popup?.classList.toggle("show");
 }
 
@@ -143,6 +153,10 @@ async function saveGroupChanges(id: string): Promise<void> {
         const groupLink = document.getElementById("groupId=" + id) as HTMLAnchorElement;
         groupLink.textContent = newNameInput.value;
         toggleRedactPopup();
+        toggleSuccessPopup();
+    }
+    else {
+        toggleFailurePopup();
     }
     throw response;
 }
@@ -180,8 +194,64 @@ async function deleteGroup(id: string): Promise<void> {
     if (response.ok) {
         toggleDeletePopup();
         displayGroupList();
+        toggleSuccessPopup();
+    }
+    else {
+        toggleFailurePopup();
     }
     throw response;
+}
+
+
+
+
+function toggleSuccessPopup(){
+    popupStackSize++;
+
+
+    var popup = document.getElementById("success-popup-span");
+    popup?.classList.toggle("show");
+    const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
+    popupStack?.appendChild(popup);
+    setTimeout(() => {
+        popup?.classList.add("fade-out");
+        setTimeout(() => {
+            popup?.classList.toggle("show")
+            popup?.classList.remove("fade-out");
+        }, 500);
+    }, 1500);
+}
+
+function toggleFailurePopup(){
+    popupStackSize++;
+
+    var popupDiv = document.createElement("div");
+    popupDiv.classList.add("popup");
+    popupDiv.classList.add("failure-div");
+    popupDiv.id = "failure-div-" + popupStackSize.toString();
+
+    var popupSpan = document.createElement("span");
+    popupSpan.classList.add("popuptext");
+    popupSpan.classList.add("failure-popup-span");
+    popupDiv.id = "failure-popup-span";
+
+    var popupPar = document.createElement("p");
+    popupPar.textContent = "Fail";
+
+    popupSpan.appendChild(popupPar);
+    popupDiv.appendChild(popupSpan);
+
+    const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
+    popupStack?.appendChild(popupDiv);
+
+    popupSpan?.classList.toggle("show");
+    setTimeout(() => {
+        popupSpan?.classList.add("fade-out");
+        setTimeout(() => {
+            popupSpan?.classList.toggle("show")
+            popupSpan?.classList.remove("fade-out");
+        }, 500);
+    }, 1500);
 }
 
 export {groupsPageConstructor};

@@ -1,0 +1,82 @@
+.popup {
+    visibility: hidden;
+    position: fixed;
+    cursor: pointer;
+}
+
+.bgDarkening{
+    background-color: #555555;
+    opacity: 0.7;
+}
+
+.popup .popuptext {
+    visibility: hidden;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: fixed;
+    z-index: 8;
+}
+
+.failure-div .failure-popup-span{
+    background-color: red;
+    left: 80%;
+    top: 12%;
+    width: 15%;
+    height: 5%;
+}
+
+.success-div .success-popup-span{
+    background-color: green;
+    left: 80%;
+    top: 12%;
+    width: 15%;
+    height: 5%;
+}
+
+#new-popup-div #create-popup-span{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 40%;
+}
+
+#delete-popup-div #delete-popup-span{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 40%;
+}
+
+#redact-popup-div #redact-popup-span{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 40%;
+}
+
+
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+
+.fade-out{
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
