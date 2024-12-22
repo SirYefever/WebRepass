@@ -1,3 +1,5 @@
+import {AuthData} from "../LocalDataStorage.ts";
+
 function getPrefixUntilChar(str: string, char: string): string {
     const index = str.indexOf(char);
     return index !== -1 ? str.slice(0, index) : str;
@@ -29,4 +31,20 @@ let popup = async (): Promise<HTMLDivElement> => {
     `;
     return popupDiv;
 }
-export { getPrefixUntilChar, popup }
+
+async function getUserRoles(){
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/roles", {
+        method: "GET",
+        headers: {
+            Authorization: "Bearer " + authData.token
+        }
+    })
+    if (response.ok) {
+        return (await response.json());
+    }
+    throw response;
+}
+
+
+export {getUserRoles, getPrefixUntilChar, popup }

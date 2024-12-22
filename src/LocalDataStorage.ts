@@ -118,16 +118,6 @@ class ProfileData {
         this.localDataStorage.profile = { ...this.localDataStorage.profile, 'birthday': value }
     }
 
-    public get gender(): string {
-        if (this.localDataStorage.profile.gender !== undefined) {
-            return this.localDataStorage.profile.gender;
-        }
-        return "";
-    }
-    public set gender(value: string) {
-        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'gender': value }
-    }
-
     public get email(): string {
         if (this.localDataStorage.profile.email !== undefined) {
             return this.localDataStorage.profile.email;
@@ -136,16 +126,6 @@ class ProfileData {
     }
     public set email(value: string) {
         this.localDataStorage.profile = { ...this.localDataStorage.profile, 'email': value }
-    }
-
-    public get phone(): string {
-        if (this.localDataStorage.profile.phone !== undefined) {
-            return this.localDataStorage.profile.phone;
-        }
-        return "";
-    }
-    public set phone(value: string) {
-        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'phone': value }
     }
 }
 

@@ -1,13 +1,11 @@
 import loginHTML from './login.html?raw'
-import { constructPage2, refillSubMainContainer } from '../index/index'
-import { constructPage } from '../index/index'
-import { AuthData } from "../LocalDataStorage.ts";
-import { profileLogic } from "../profile/profile.ts";
+import { constructPage2 } from '../index/index'
+import { AuthData, ProfileData } from "../LocalDataStorage.ts";
 import { UserLoginModel } from '../api/interfaces.ts';
+import {footerConstructor} from "../footer/footer.ts";
 
 
 async function login(requestBody: object) {
-    let result = null;
     const response = await fetch("https://camp-courses.api.kreosoft.space/login", {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -27,18 +25,22 @@ async function loginLogic() {
     let loginData: UserLoginModel = { email:emailInput.value, password:passwordInput.value };
     const token = await login(loginData);
     const storage = new AuthData();
+    if (token !== null)
+    {
+        const userData = new ProfileData();
+        userData.email = emailInput.value;
+        window.location.reload();
+    }
     storage.token = token;
 }
 
+
 function loginConstructor() {
-    window.localStorage.clear();
     constructPage2(loginHTML, "/src/login/login.css");
     const loginButton = document.getElementById('loginButtonSelector')! as HTMLButtonElement;
     loginButton.onclick = loginLogic
-    const registerButton = document.getElementById('registerButtonSelector')! as HTMLButtonElement;
-    registerButton.onclick = () => {
-        window.location.pathname = "/registration";
-    };
+
+    footerConstructor();
 }
 
 export { login, loginConstructor }

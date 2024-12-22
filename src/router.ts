@@ -12,7 +12,7 @@ class Router {
             return this.routes.get(path)!;
         } else {
             return null;
-        };
+        }
     };
 
     public template(name: string, templateFunction: () => void): () => void {
@@ -28,7 +28,7 @@ class Router {
         };
     };
 
-    public retrieveRoute(evt: Event) {
+    public retrieveRoute() {
         let url = window.location.pathname || '/';
         let route: () => void;
         if (url.includes("patient/")){

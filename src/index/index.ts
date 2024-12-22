@@ -1,62 +1,45 @@
 import headerBuilder from '../header/header'
 import "./../style.css"
 import "./../header/header.css"
-// import "./../registration/registration.css"
-import { LocalDataStorage } from '.././LocalDataStorage'
-import { AuthData } from '.././LocalDataStorage'
 import { errorPageConstructor } from '../errorPage/errorPage'
-import { login } from '../login/login'
 import { loginConstructor } from '../login/login'
 import { profileConstructor } from '../profile/profile'
 import { constructRegPage } from '../registration/registration'
-// import { register } from '../registration/registration'
 import { Router } from '.././router'
 import { defaultPageConstructor } from '../defaultPage/defaultPage'
+import {groupsPageConstructor} from "../groups/groups.ts";
+import footerHtml from '../footer/footer.html?raw'
+import {footerConstructor} from "../footer/footer.ts";
 
-let authStateProvider = new AuthData();
 
 let router = new Router();
 
+router.template('root', function () {
+    defaultPageConstructor();
+});
 router.template('login', function () {
     loginConstructor();
 });
-
 router.template('registration', function () {
     constructRegPage();
 });
-
 router.template('profile', function() {
     profileConstructor();
 })
-
 router.template('error', function () {
     errorPageConstructor();
 });
-// router.template('register', function () {
-//   register();
-// });
-
-
+router.template('groups', function () {
+    groupsPageConstructor();
+});
 router.route('/login', 'login');
 router.route('/registration', 'registration');
 router.route('/profile', 'profile');
 router.route('/patients', 'patients');
 router.route('/error', 'error');
-router.route('/patient/', 'patient')
-
-router.template('root', function () {
-    defaultPageConstructor();
-});
-// router.template('root', () => {
-//     const route =  authStateProvider.token ? router.resolveRoute('/profile') : router.resolveRoute('/login');
-//     if (typeof(route) === 'function') {
-//         route();
-//     }
-// });
-
+router.route('/groups', 'groups')
 router.route('/', 'root');
 
-// router.route('/register', eregister');
 
 function constructPage(innerHTML: string) {
     if (mainContainer !== null) {
@@ -64,14 +47,19 @@ function constructPage(innerHTML: string) {
     }
     const headerDiv = document.createElement("div");
     headerDiv.id = "header-div";
+
     const subMainContainer = document.createElement("div");
     subMainContainer.id = "sub-main-container";
-
     subMainContainer!.innerHTML = innerHTML;
+
+    const footerDiv = document.createElement("div");
+    footerDiv.id = "footer-div";
+    footerDiv.innerHTML = footerHtml;
 
     mainContainer?.appendChild(headerBuilder());
     mainContainer?.appendChild(subMainContainer);
-
+    mainContainer?.appendChild(footerDiv);
+    footerConstructor();
 }
 
 function constructPage2(innerHTML: string, cssFile: string) {
@@ -82,12 +70,23 @@ function constructPage2(innerHTML: string, cssFile: string) {
     headerDiv.id = "header-div";
     const subMainContainer = document.createElement("div");
     subMainContainer.id = "sub-main-container";
-
     subMainContainer!.innerHTML = innerHTML;
+
+    const footerDiv = document.createElement("div");
+    footerDiv.id = "footer-div";
+    footerDiv.innerHTML = footerHtml;
 
     mainContainer?.appendChild(headerBuilder());
     mainContainer?.appendChild(subMainContainer);
+    mainContainer?.appendChild(footerDiv);
 
+    footerConstructor();
+    loadCSS(cssFile);
+}
+
+function addHtmlToPage(innerHTML: string, cssFile: string) {
+    const subMainContainer = document.querySelector("#sub-main-container");
+    subMainContainer!.innerHTML += innerHTML;
     loadCSS(cssFile);
 }
 
@@ -105,18 +104,14 @@ function loadCSS(href: string) {
   document.head.appendChild(link);
 }
 
-// let headerContainer = document.getElementById("header-div");
-
 let mainContainer = document.getElementById("mainContainer");
 mainContainer?.classList.add("mainContainer");
 
 mainContainer?.prepend(headerBuilder());
 
 let subMainContainer: HTMLDivElement;
-// let subMainContainer = document.getElementById("sub-main-container");
-// mainContainer?.appendChild(subMainContainer!);
 
 window.addEventListener('load', router.retrieveRoute);
 window.addEventListener('hashchange', router.retrieveRoute);
 
-export { refillSubMainContainer, constructPage, constructPage2  }
+export {addHtmlToPage, loadCSS, refillSubMainContainer, constructPage, constructPage2  }

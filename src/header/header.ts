@@ -1,15 +1,11 @@
 import { AuthData } from '../LocalDataStorage'
 import { ProfileData } from '../LocalDataStorage'
 
-const maximumUserNameLengthForHeader = 24;
 const authData = new AuthData();
 const profileData = new ProfileData();
 
-function redirectToPage(selectElement: HTMLSelectElement) {
-    const selectedValue = selectElement.value;
-    if (selectedValue) {
-        window.location.href = selectedValue;
-    }
+function clearLocalStorage() {
+    localStorage.clear();
 }
 
 export default function headerBuilder(): HTMLDivElement {
@@ -35,20 +31,27 @@ export default function headerBuilder(): HTMLDivElement {
     div.appendChild(rightHeaderDiv);
 
 
-    if (authData.IsLoggedIn()) {//userprofile anchor && logout anchor
+    if (authData.IsLoggedIn()) {
+        const groupsAnchor = document.createElement("a");
+        groupsAnchor.href = "/groups";
+        groupsAnchor.textContent = "Groups";
+        groupsAnchor.classList.add("headerAnchor");
+
+        leftHeaderDiv.appendChild(groupsAnchor);
+
         const profileAnchor = document.createElement("a");
+        profileAnchor.href = "/profile";
+        profileAnchor.classList.add("headerAnchor");
+
         const logoutAnchor = document.createElement("a");
-        const patientsAnchor = document.createElement("a");
-
-        patientsAnchor.classList.add("headerAnchor");
-        patientsAnchor.classList.add("patientsAnchor");
-
+        logoutAnchor.href = "/login";
+        logoutAnchor.classList.add("headerAnchor");
         logoutAnchor.textContent = "Выход";
+        profileAnchor.textContent = profileData.email;
+        logoutAnchor.onclick = clearLocalStorage;
 
-        patientsAnchor.textContent = "Пациенты";
-        patientsAnchor.href = "/patients";
-
-        middleHeaderDiv.appendChild(patientsAnchor);
+        rightHeaderDiv.appendChild(profileAnchor);
+        rightHeaderDiv.appendChild(logoutAnchor);
     } else {
         const regLink = document.createElement("a");
         const logInLink = document.createElement("a");

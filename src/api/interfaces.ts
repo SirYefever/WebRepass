@@ -3,11 +3,8 @@ interface LoginApiResponse {
 }
 
 interface ProfileApiInterface {
-    name?: string;
-    birthday?: string;
-    gender?: string;
-    email?: string;
-    phone?: string;
+    fullName: string;
+    birthDate: string;
 }
 
 interface PatientsGetApiInterface {
@@ -176,6 +173,25 @@ interface UserLoginModel {
   password: string
 }
 
+interface Group {
+  id: string,
+  name: string
+}
 
-export type {UserLoginModel, UserRegisterModel, SpecialityGetResponse, SpecialityModel, Gender, UserRegisterModel as DoctorRegisterModel, PatientInspectionResponse, InspectionModel, Icd10RecordModel, PatientModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse, PatientsGetApiInterface, PatientPagedListModel as ResponsePatientsGetApi, Patient, PatientPagedListModel, PatientCreateModel }
+interface UserRoles {
+  isTeacher: boolean,
+  isStudent: boolean,
+  isAdmin: boolean,
+}
+
+interface EditCampusGroupModel{
+  name: string
+}
+
+interface CreateCampusGroupModel{
+  name: string
+}
+
+
+export type {CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, SpecialityGetResponse, SpecialityModel, Gender, UserRegisterModel as DoctorRegisterModel, PatientInspectionResponse, InspectionModel, Icd10RecordModel, PatientModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse, PatientsGetApiInterface, PatientPagedListModel as ResponsePatientsGetApi, Patient, PatientPagedListModel, PatientCreateModel }
 export {GenderEnum}
