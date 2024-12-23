@@ -3,22 +3,17 @@ import groupsHtml from './groups.html?raw'
 import redactPopupHtml from './popups/redactPopup.html?raw'
 import createPopupHtml from './popups/newGroup.html?raw'
 import deletePopupHtml from './popups/deletePopup.html?raw'
-import successPopupHtml from './popups/successPopup.html?raw'
-import failurePopupHtml from './popups/failurePopup.html?raw'
 import {AuthData} from "../LocalDataStorage.ts";
 import {CreateCampusGroupModel, EditCampusGroupModel, Group, UserRoles} from "../api/interfaces.ts";
 import {getUserRoles} from "../utils/utils.ts";
-
-
-var popupStackSize = 0;
 
 async function groupsPageConstructor(){
     constructPage2(groupsHtml, "/src/groups/groups.css");
     addHtmlToPage(redactPopupHtml, "./src/groups/popups/popup.css");
     addHtmlToPage(createPopupHtml);
     addHtmlToPage(deletePopupHtml);
-    addHtmlToPage(successPopupHtml);
-    addHtmlToPage(failurePopupHtml);
+    // addHtmlToPage(successPopupHtml);
+    // addHtmlToPage(failurePopupHtml);
     const curUserRoles = await getUserRoles() as UserRoles;
 
     if (curUserRoles.isAdmin){
@@ -206,34 +201,64 @@ async function deleteGroup(id: string): Promise<void> {
 
 
 function toggleSuccessPopup(){
-    popupStackSize++;
+    const failurePopup = document.getElementById("failure-div")
+    if (failurePopup){
+        failurePopup.remove();
+    }
+    const successPopup = document.getElementById("success-div")
+    if (successPopup){
+        successPopup.remove();
+    }
 
+    var popupDiv = document.createElement("div");
+    popupDiv.classList.add("popup");
+    popupDiv.classList.add("success-div");
+    popupDiv.id = "success-div";
 
-    var popup = document.getElementById("success-popup-span");
-    popup?.classList.toggle("show");
+    var popupSpan = document.createElement("span");
+    popupSpan.classList.add("popuptext");
+    popupSpan.classList.add("success-popup-span");
+    popupSpan.id = "success-popup-span";
+
+    var popupPar = document.createElement("p");
+    popupPar.textContent = "Success";
+
+    popupSpan.appendChild(popupPar);
+    popupDiv.appendChild(popupSpan);
+
     const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
-    popupStack?.appendChild(popup);
+    popupStack?.appendChild(popupDiv);
+
+    popupSpan?.classList.toggle("show");
     setTimeout(() => {
-        popup?.classList.add("fade-out");
+        popupSpan?.classList.add("fade-out");
         setTimeout(() => {
-            popup?.classList.toggle("show")
-            popup?.classList.remove("fade-out");
+            popupSpan?.classList.toggle("show")
+            popupSpan?.classList.remove("fade-out");
+            popupDiv.remove();
         }, 500);
     }, 1500);
 }
 
 function toggleFailurePopup(){
-    popupStackSize++;
+    const failurePopup = document.getElementById("failure-div")
+    if (failurePopup){
+        failurePopup.remove();
+    }
+    const successPopup = document.getElementById("success-div")
+    if (successPopup){
+        successPopup.remove();
+    }
 
     var popupDiv = document.createElement("div");
     popupDiv.classList.add("popup");
     popupDiv.classList.add("failure-div");
-    popupDiv.id = "failure-div-" + popupStackSize.toString();
+    popupDiv.id = "failure-div";
 
     var popupSpan = document.createElement("span");
     popupSpan.classList.add("popuptext");
     popupSpan.classList.add("failure-popup-span");
-    popupDiv.id = "failure-popup-span";
+    popupSpan.id = "failure-popup-span";
 
     var popupPar = document.createElement("p");
     popupPar.textContent = "Fail";
@@ -250,6 +275,7 @@ function toggleFailurePopup(){
         setTimeout(() => {
             popupSpan?.classList.toggle("show")
             popupSpan?.classList.remove("fade-out");
+            popupDiv.remove();
         }, 500);
     }, 1500);
 }
