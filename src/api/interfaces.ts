@@ -70,4 +70,10 @@ interface CreateCampusCourseModel{
   annotations: string,
   mainTeacherId: string
 }
-export type { CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+
+interface UserModel{
+  id: string,
+  fullName: string
+}
+
+export type { UserModel, Semesters, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

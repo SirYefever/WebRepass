@@ -39,7 +39,7 @@
     left: 15%;
     top: 15%;
     width: 70%;
-    height: 40%;
+    height: 80%;
 }
 
 #delete-popup-div #delete-popup-span{
@@ -80,8 +80,27 @@
     transition: opacity 0.5s ease-out;
 }
 
-#semester-div{
+.center-div{
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    justify-content: center;
+}
+
+.note-editable {
+    background-color: white !important;
+    color: black !important;
+}
+
+#teacher-select{
+    width: 200px;
+    color: white;
+    background-color: black;
+}
+
+.teacher-option{
+    color: white;
+}
+
+#teacher-name-input{
+    color: black;
 }

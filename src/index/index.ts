@@ -11,6 +11,7 @@ import {groupsPageConstructor} from "../groups/groups.ts";
 import footerHtml from '../footer/footer.html?raw'
 import {footerConstructor} from "../footer/footer.ts";
 import {coursesPageConstructor} from "../courses/courses.ts";
+import $ from 'jquery';
 
 
 let router = new Router();

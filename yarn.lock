@@ -337,10 +337,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jquery@file:node_modules/@types/jquery::locator=vite-typescript-starter%40workspace%3A.":
+  version: 3.7.1
+  resolution: "@types/jquery@file:node_modules/@types/jquery#node_modules/@types/jquery::hash=2b0a66&locator=vite-typescript-starter%40workspace%3A."
+  checksum: 10c0/3d7899a586c6adfcdb1c4f9e591e7a44e44d38db0612efded458bb6c0a0d33c7c3a23892152fd20dafe6a4db0c67ec7757f3a0345362db0a9656ece50c2a25cb
+  languageName: node
+  linkType: hard
+
+"@types/jquery@npm:*":
+  version: 3.5.32
+  resolution: "@types/jquery@npm:3.5.32"
+  dependencies:
+    "@types/sizzle": "npm:*"
+  checksum: 10c0/4a17ad6819b89026c21323656ab01b0b263f9d470910a87c8740920ff98319d503c7352b85b50134a39724ecbfccabc73aa4c741dfdd460cf8bbe714f9259054
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.8":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 10c0/a996a745e6c5d60292f36731dd41341339d4eeed8180bb09226e5c8d23759067692b1d88e5d91d72ee83dfc00d3aca8e7bd43ea120516c17922cbcb7c3e252db
+  languageName: node
+  linkType: hard
+
+"@types/sizzle@npm:*":
+  version: 2.3.9
+  resolution: "@types/sizzle@npm:2.3.9"
+  checksum: 10c0/db0277ff62e8ebe6cdae2020fd045fd7fd19f29a3a2ce13c555b14fb00e105e79004883732118b9f2e8b943cb302645e9eddb4e7bdeef1a171da679cd4c32b72
+  languageName: node
+  linkType: hard
+
+"@types/summernote@npm:^0.8.10":
+  version: 0.8.10
+  resolution: "@types/summernote@npm:0.8.10"
+  dependencies:
+    "@types/jquery": "npm:*"
+  checksum: 10c0/922f223472701562792c254ecf9349a5c5a5b45e56875b83973d983d7a3046acfd9149304a9cb3bcdfa64d0584136ca664b8e34bc7da05da8574b9ac1c93dde4
   languageName: node
   linkType: hard
 
@@ -795,6 +827,13 @@ __metadata:
     "@pkgjs/parseargs":
       optional: true
   checksum: 10c0/6acc10d139eaefdbe04d2f679e6191b3abf073f111edf10b1de5302c97ec93fffeb2fdd8681ed17f16268aa9dd4f8c588ed9d1d3bffbbfa6e8bf897cbb3149b9
+  languageName: node
+  linkType: hard
+
+"jquery@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "jquery@npm:3.7.1"
+  checksum: 10c0/808cfbfb758438560224bf26e17fcd5afc7419170230c810dd11f5c1792e2263e2970cca8d659eb84fcd9acc301edb6d310096e450277d54be4f57071b0c82d9
   languageName: node
   linkType: hard
 
@@ -1379,6 +1418,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vite-typescript-starter@workspace:."
   dependencies:
+    "@types/jquery": "file:node_modules/@types/jquery"
+    "@types/summernote": "npm:^0.8.10"
+    jquery: "npm:^3.7.1"
     raw-loader: "npm:^4.0.2"
     typescript: "npm:^5.6.2"
     vite: "npm:^5.4.9"

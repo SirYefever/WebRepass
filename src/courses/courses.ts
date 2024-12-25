@@ -1,8 +1,12 @@
 import coursesHtml from './courses.html?raw'
 import createPopupHtml from './popups/newCourse.html?raw'
-import {addHtmlToPage, constructPage2} from "../index";
+import {addHtmlToPage, constructPage2, loadCSS} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
-import {CampusCourseModel, CreateCampusCourseModel, CreateCampusGroupModel, UserRoles} from "../api/interfaces.ts";
+import {
+    CampusCourseModel,
+    CreateCampusCourseModel, UserModel,
+    UserRoles
+} from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
 
 async function coursesPageConstructor(){
@@ -18,6 +22,12 @@ async function coursesPageConstructor(){
         createNewDiv?.appendChild(createNewButton);
     }
     displayCourses(await fetchCourses());
+    $(document).ready(function() {
+        $('.summernote').summernote();
+    });
+    $('.summernote').summernote({
+        dialogsInBody: true
+    });
 }
 
 async function fetchCourses(): Promise<CampusCourseModel[]>{
@@ -57,6 +67,7 @@ function generateAndFillCourseTemplate(courseNumber: number, data: CampusCourseM
 
 function displayCourses(courses: CampusCourseModel[]) {
     let courseList = document.querySelector("#course-list-ul");
+    // @ts-ignore
     courseList.innerHTML = "";
     let courseNumber = 1;
     courses.forEach(course => {
@@ -67,14 +78,53 @@ function displayCourses(courses: CampusCourseModel[]) {
 }
 
 
-function popupCreate(){
+async function popupCreate(){
     toggleCreatePopup();
+    const users = await fetchUsers() as UserModel[];
     const urlSplit = window.location.pathname.split("/");
     const groupId = urlSplit[urlSplit.length - 1];
+
     var saveButton = document.getElementById("confirm-create-button");
     saveButton?.addEventListener("click", () => createNewCourse(groupId));
     var cancelButton = document.getElementById("cancel-create-button");
     cancelButton?.addEventListener("click", cancelCourseCreation);
+
+    const springCheckbox = document.getElementById("spring");
+    springCheckbox?.addEventListener("change", manageCheckingSpring)
+    const autumnCheckbox = document.getElementById("autumn");
+    autumnCheckbox?.addEventListener("change", manageCheckingAutumn)
+
+    const teacherInput = document.getElementById("teacher-name-input") as HTMLInputElement;
+    // @ts-ignore
+    teacherInput.onchange = () => {
+        console.log(teacherInput.value);
+        let subUsers = [] as UserModel[];
+        users.forEach((user) => {
+            if (user.fullName.includes(<string>teacherInput?.value)) {
+                subUsers.push(user);
+            }
+        })
+        fillTeacherSelectWithUsers(subUsers);
+    }
+    fillTeacherSelectWithUsers(users);
+}
+
+function fillTeacherSelectWithUsers(users: UserModel[]) {
+    let teacherSelect = document.getElementById("teacher-select");
+    // @ts-ignore
+    teacherSelect.innerHTML = "";
+    users.sort(compareUsersAlphabetically);
+    users.forEach(user => {
+        const newOption = document.createElement("option");
+        newOption.textContent = user.fullName;
+        newOption.dataset.info = user.id;
+        newOption.classList.add("teacher-option");
+        teacherSelect?.appendChild(newOption);
+    })
+}
+
+function compareUsersAlphabetically(firstUser: UserModel, secondUser: UserModel){
+    return firstUser.fullName.localeCompare(secondUser.fullName);
 }
 
 function toggleCreatePopup(){
@@ -196,6 +246,38 @@ function toggleFailurePopup(){
             popupDiv.remove();
         }, 500);
     }, 1500);
+}
+
+function manageCheckingSpring(){
+    const autumn = document.getElementById("autumn") as HTMLInputElement;
+    const spring = document.getElementById("spring") as HTMLInputElement;
+    if (autumn.checked) {
+        autumn.checked = false;
+    }
+    spring.checked = true;
+}
+
+function manageCheckingAutumn(){
+    const autumn = document.getElementById("autumn") as HTMLInputElement;
+    const spring = document.getElementById("spring") as HTMLInputElement;
+    if (spring.checked) {
+        spring.checked = false;
+    }
+    autumn.checked = true;
+}
+
+async function fetchUsers():Promise<UserModel[]>{
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/users", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+            "Content-Type": "application/json"
+        },
+    })
+    if (response.ok) {
+        return response.json();
+    }
 }
 
 export { coursesPageConstructor };
