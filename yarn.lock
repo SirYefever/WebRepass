@@ -337,13 +337,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@file:node_modules/@types/jquery::locator=vite-typescript-starter%40workspace%3A.":
-  version: 3.7.1
-  resolution: "@types/jquery@file:node_modules/@types/jquery#node_modules/@types/jquery::hash=2b0a66&locator=vite-typescript-starter%40workspace%3A."
-  checksum: 10c0/3d7899a586c6adfcdb1c4f9e591e7a44e44d38db0612efded458bb6c0a0d33c7c3a23892152fd20dafe6a4db0c67ec7757f3a0345362db0a9656ece50c2a25cb
-  languageName: node
-  linkType: hard
-
 "@types/jquery@npm:*":
   version: 3.5.32
   resolution: "@types/jquery@npm:3.5.32"
@@ -1418,7 +1411,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vite-typescript-starter@workspace:."
   dependencies:
-    "@types/jquery": "file:node_modules/@types/jquery"
     "@types/summernote": "npm:^0.8.10"
     jquery: "npm:^3.7.1"
     raw-loader: "npm:^4.0.2"

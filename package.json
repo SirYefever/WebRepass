@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@types/jquery": "file:node_modules/@types/jquery",
     "@types/summernote": "^0.8.10",
     "jquery": "^3.7.1",
     "raw-loader": "^4.0.2",

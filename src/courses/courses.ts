@@ -4,7 +4,7 @@ import {addHtmlToPage, constructPage2, loadCSS} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
 import {
     CampusCourseModel,
-    CreateCampusCourseModel, UserModel,
+    CreateCampusCourseModel, Semesters, UserModel,
     UserRoles
 } from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
@@ -53,7 +53,7 @@ function generateAndFillCourseTemplate(courseNumber: number, data: CampusCourseM
                 <p class="course-name" id="course-name-${courseNumber}">${data.name}</p>
                 <p id="year-${courseNumber}">Year: ${data.startYear}</p>
                 <p id="semester-type-${courseNumber}">Semester: ${data.semester}</p>
-                <p id="slots-overall-${courseNumber}">Overall slots: ${data.maximumStudentCount}</p>
+                <p id="slots-overall-${courseNumber}">Overall slots: ${data.maximumStudentsCount}</p>
                 <p id="slots-left-${courseNumber}">Available slots: ${data.remainingSlotsCount}</p>
             </div>
             
@@ -134,10 +134,22 @@ function toggleCreatePopup(){
 
 async function createNewCourse(groupId: string): Promise<void>{
     const courseName = document.getElementById("new-course-name") as HTMLInputElement;
+    const startYear = document.getElementById("new-course-start-year") as HTMLInputElement;
+    const maxCount = document.getElementById("new-course-maximum-student-count") as HTMLInputElement;
+    const semesterValue = getSemesterFromCheckboxes();
+    const mainTeacher = document.getElementById("teacher-select") as HTMLSelectElement;
+    const reqContent: string = $('#requiremets-div').summernote('code');
+    const annoContent: string = $('#annotations-div').summernote('code');
+    console.log(mainTeacher?.dataset.info);
     const createModel = {
         name: courseName.value,
-        startYear: new Date().getFullYear()
-    } as CreateCampusCourseModel;
+        startYear: parseInt(startYear.value),
+        maximumStudentsCount: parseInt(maxCount.value),
+        semester: semesterValue,
+        requirements: reqContent,
+        annotations: annoContent,
+        mainTeacherId: mainTeacher?.selectedOptions[0].dataset.info
+    } as CreateCampusCourseModel
 
     const authData = new AuthData();
     const response = await fetch("https://camp-courses.api.kreosoft.space/groups/" + groupId, {
@@ -152,12 +164,34 @@ async function createNewCourse(groupId: string): Promise<void>{
         toggleSuccessPopup();
         toggleCreatePopup();
         displayCourses(await fetchCourses());
+        courseName.innerHTML = "";
+        startYear.innerHTML = "";
+        maxCount.innerHTML = "";
+        mainTeacher.innerHTML = "";
+        const springCheckbox = document.getElementById("spring") as HTMLInputElement;
+        springCheckbox.checked = false;
+        const autumnCheckbox = document.getElementById("autumn") as HTMLInputElement;
+        autumnCheckbox.checked = false;
+        $('#requiremets-div').summernote('code', '');
+        $('#annotations-div').summernote('code', '');
     }
 
     else {
         toggleFailurePopup();
     }
     throw response;
+}
+
+function getSemesterFromCheckboxes(){
+    const springCheckbox = document.getElementById("spring") as HTMLInputElement;
+    const autumnCheckbox = document.getElementById("autumn") as HTMLInputElement;
+    if (springCheckbox.checked) {
+        return "Spring"
+    }
+    if (autumnCheckbox.checked){
+        return "Autumn";
+    }
+    return null;
 }
 
 function cancelCourseCreation(){
@@ -266,7 +300,7 @@ function manageCheckingAutumn(){
     autumn.checked = true;
 }
 
-async function fetchUsers():Promise<UserModel[]>{
+async function fetchUsers():Promise<UserModel[] | undefined>{
     const authData = new AuthData();
     const response = await fetch("https://camp-courses.api.kreosoft.space/users", {
         method: "GET",

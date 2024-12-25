@@ -43,7 +43,7 @@ interface CampusCourseModel{
   id: string,
   name: string,
   startYear: number,
-  maximumStudentCount: number,
+  maximumStudentsCount: number,
   remainingSlotsCount: number,
   status: CourseStatuses,
   semester: Semesters
@@ -64,9 +64,9 @@ enum Semesters{
 interface CreateCampusCourseModel{
   name: string,
   startYear: number,
-  maximumStudentCount: number,
-  semester: Semesters,
-  requirments: string,
+  maximumStudentsCount: number,
+  semester: string,
+  requirements: string,
   annotations: string,
   mainTeacherId: string
 }
