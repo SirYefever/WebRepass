@@ -1,0 +1,21 @@
+.course-div{
+    display: flex;
+    flex-direction: row;
+    border: #555555 2px solid;
+    margin-top: 1%;
+}
+
+.course-status{
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 1%;
+}
+
+.main-part{
+    flex: 5;
+}
+
+.course-name{
+    font-size: 150%;
+}

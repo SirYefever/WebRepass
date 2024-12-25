@@ -9,6 +9,10 @@ function footerConstructor() {
 
     const loginStudentButton = document.getElementById('login-as-student')! as HTMLButtonElement;
     loginStudentButton.onclick = loginStudent;
+
+    const testBindButton = document.getElementById('test-bind-function')! as HTMLButtonElement;
+    testBindButton.onclick = bind;
+
     loadCSS("/src/footer/footer.css");
 }
 
@@ -36,6 +40,10 @@ async function loginStudent(){
         window.location.reload();
     }
     storage.token = token;
+}
+
+
+function bind(){
 }
 
 export {footerConstructor};

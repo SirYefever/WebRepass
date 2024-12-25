@@ -79,3 +79,9 @@
     opacity: 0;
     transition: opacity 0.5s ease-out;
 }
+
+#semester-div{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}

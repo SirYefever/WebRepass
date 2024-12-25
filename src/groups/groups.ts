@@ -12,8 +12,6 @@ async function groupsPageConstructor(){
     addHtmlToPage(redactPopupHtml, "./src/groups/popups/popup.css");
     addHtmlToPage(createPopupHtml);
     addHtmlToPage(deletePopupHtml);
-    // addHtmlToPage(successPopupHtml);
-    // addHtmlToPage(failurePopupHtml);
     const curUserRoles = await getUserRoles() as UserRoles;
 
     if (curUserRoles.isAdmin){

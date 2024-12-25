@@ -1,0 +1,201 @@
+import coursesHtml from './courses.html?raw'
+import createPopupHtml from './popups/newCourse.html?raw'
+import {addHtmlToPage, constructPage2} from "../index";
+import {getUserRoles} from "../utils/utils.ts";
+import {CampusCourseModel, CreateCampusCourseModel, CreateCampusGroupModel, UserRoles} from "../api/interfaces.ts";
+import {AuthData} from "../LocalDataStorage.ts";
+
+async function coursesPageConstructor(){
+    constructPage2(coursesHtml, "/src/courses/courses.css");
+    addHtmlToPage(createPopupHtml, "/src/courses/popups/popup.css");
+    const curUserRoles = await getUserRoles() as UserRoles;
+
+    if (curUserRoles.isAdmin){
+        const createNewButton = document.createElement("button");
+        createNewButton?.addEventListener("click", popupCreate);
+        createNewButton.textContent = "Add course";
+        const createNewDiv = document.querySelector("#create-new-div");
+        createNewDiv?.appendChild(createNewButton);
+    }
+    displayCourses(await fetchCourses());
+}
+
+async function fetchCourses(): Promise<CampusCourseModel[]>{
+    const authData = new AuthData();
+    const urlSplit = window.location.pathname.split("/");
+    const groupId = urlSplit[urlSplit.length - 1];
+    const response = await fetch("https://camp-courses.api.kreosoft.space/groups/" + groupId, {
+        method: "GET",
+        headers: {
+            Authorization: "Bearer " + authData.token
+        }
+    })
+    if (response.ok) {
+        return (await response.json());
+    }
+    throw response;
+}
+
+function generateAndFillCourseTemplate(courseNumber: number, data: CampusCourseModel): string {
+    const result = `
+        <div class="course-div">
+            <div class="main-part" id="main-part-div-${courseNumber}">
+                <p class="course-name" id="course-name-${courseNumber}">${data.name}</p>
+                <p id="year-${courseNumber}">Year: ${data.startYear}</p>
+                <p id="semester-type-${courseNumber}">Semester: ${data.semester}</p>
+                <p id="slots-overall-${courseNumber}">Overall slots: ${data.maximumStudentCount}</p>
+                <p id="slots-left-${courseNumber}">Available slots: ${data.remainingSlotsCount}</p>
+            </div>
+            
+            <div class="course-status" id="course-status-div-${courseNumber}">
+                <p id="course-status-p-${courseNumber}">${data.status}</p>
+            </div>
+        </div>
+        `;
+    return result;
+}
+
+function displayCourses(courses: CampusCourseModel[]) {
+    let courseList = document.querySelector("#course-list-ul");
+    courseList.innerHTML = "";
+    let courseNumber = 1;
+    courses.forEach(course => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = generateAndFillCourseTemplate(courseNumber, course);
+        courseList?.appendChild(listItem);
+    })
+}
+
+
+function popupCreate(){
+    toggleCreatePopup();
+    const urlSplit = window.location.pathname.split("/");
+    const groupId = urlSplit[urlSplit.length - 1];
+    var saveButton = document.getElementById("confirm-create-button");
+    saveButton?.addEventListener("click", () => createNewCourse(groupId));
+    var cancelButton = document.getElementById("cancel-create-button");
+    cancelButton?.addEventListener("click", cancelCourseCreation);
+}
+
+function toggleCreatePopup(){
+    var popup = document.getElementById("create-popup-span");
+    popup?.classList.toggle("show");
+}
+
+async function createNewCourse(groupId: string): Promise<void>{
+    const courseName = document.getElementById("new-course-name") as HTMLInputElement;
+    const createModel = {
+        name: courseName.value,
+        startYear: new Date().getFullYear()
+    } as CreateCampusCourseModel;
+
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/groups/" + groupId, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(createModel)
+    })
+    if (response.ok) {
+        toggleSuccessPopup();
+        toggleCreatePopup();
+        displayCourses(await fetchCourses());
+    }
+
+    else {
+        toggleFailurePopup();
+    }
+    throw response;
+}
+
+function cancelCourseCreation(){
+    const newNameInput = document.getElementById("confirm-create-button") as HTMLInputElement;
+    newNameInput.value = "";
+    toggleCreatePopup();
+}
+
+
+
+function toggleSuccessPopup(){
+    const failurePopup = document.getElementById("failure-div")
+    if (failurePopup){
+        failurePopup.remove();
+    }
+    const successPopup = document.getElementById("success-div")
+    if (successPopup){
+        successPopup.remove();
+    }
+
+    var popupDiv = document.createElement("div");
+    popupDiv.classList.add("popup");
+    popupDiv.classList.add("success-div");
+    popupDiv.id = "success-div";
+
+    var popupSpan = document.createElement("span");
+    popupSpan.classList.add("popuptext");
+    popupSpan.classList.add("success-popup-span");
+    popupSpan.id = "success-popup-span";
+
+    var popupPar = document.createElement("p");
+    popupPar.textContent = "Success";
+
+    popupSpan.appendChild(popupPar);
+    popupDiv.appendChild(popupSpan);
+
+    const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
+    popupStack?.appendChild(popupDiv);
+
+    popupSpan?.classList.toggle("show");
+    setTimeout(() => {
+        popupSpan?.classList.add("fade-out");
+        setTimeout(() => {
+            popupSpan?.classList.toggle("show")
+            popupSpan?.classList.remove("fade-out");
+            popupDiv.remove();
+        }, 500);
+    }, 1500);
+}
+
+function toggleFailurePopup(){
+    const failurePopup = document.getElementById("failure-div")
+    if (failurePopup){
+        failurePopup.remove();
+    }
+    const successPopup = document.getElementById("success-div")
+    if (successPopup){
+        successPopup.remove();
+    }
+
+    var popupDiv = document.createElement("div");
+    popupDiv.classList.add("popup");
+    popupDiv.classList.add("failure-div");
+    popupDiv.id = "failure-div";
+
+    var popupSpan = document.createElement("span");
+    popupSpan.classList.add("popuptext");
+    popupSpan.classList.add("failure-popup-span");
+    popupSpan.id = "failure-popup-span";
+
+    var popupPar = document.createElement("p");
+    popupPar.textContent = "Fail";
+
+    popupSpan.appendChild(popupPar);
+    popupDiv.appendChild(popupSpan);
+
+    const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
+    popupStack?.appendChild(popupDiv);
+
+    popupSpan?.classList.toggle("show");
+    setTimeout(() => {
+        popupSpan?.classList.add("fade-out");
+        setTimeout(() => {
+            popupSpan?.classList.toggle("show")
+            popupSpan?.classList.remove("fade-out");
+            popupDiv.remove();
+        }, 500);
+    }, 1500);
+}
+
+export { coursesPageConstructor };

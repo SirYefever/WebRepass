@@ -31,12 +31,12 @@ class Router {
     public retrieveRoute() {
         let url = window.location.pathname || '/';
         let route: () => void;
-        if (url.includes("patient/")){
-            route = this.resolveRoute("/patient/") as (() => void);
+        if (url.includes("groups/")){
+            route = this.resolveRoute("/groups/") as (() => void);
         } else {
             route = this.resolveRoute(url) as (() => void);
         }
-        if ( route === undefined) {
+        if (route === undefined) {
             url = "/error";
             route = this.resolveRoute(url) as (() => void);
         }

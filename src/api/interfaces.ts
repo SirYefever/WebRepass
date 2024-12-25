@@ -39,5 +39,35 @@ interface CreateCampusGroupModel{
   name: string
 }
 
+interface CampusCourseModel{
+  id: string,
+  name: string,
+  startYear: number,
+  maximumStudentCount: number,
+  remainingSlotsCount: number,
+  status: CourseStatuses,
+  semester: Semesters
+}
 
-export type {CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+enum CourseStatuses{
+  Created,
+  OpenForAssigning,
+  Started,
+  Finished
+}
+
+enum Semesters{
+  Autumn,
+  Spring
+}
+
+interface CreateCampusCourseModel{
+  name: string,
+  startYear: number,
+  maximumStudentCount: number,
+  semester: Semesters,
+  requirments: string,
+  annotations: string,
+  mainTeacherId: string
+}
+export type { CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

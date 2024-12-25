@@ -10,6 +10,7 @@ import { defaultPageConstructor } from '../defaultPage/defaultPage'
 import {groupsPageConstructor} from "../groups/groups.ts";
 import footerHtml from '../footer/footer.html?raw'
 import {footerConstructor} from "../footer/footer.ts";
+import {coursesPageConstructor} from "../courses/courses.ts";
 
 
 let router = new Router();
@@ -32,6 +33,9 @@ router.template('error', function () {
 router.template('groups', function () {
     groupsPageConstructor();
 });
+router.template('courses', function () {
+    coursesPageConstructor();
+});
 router.route('/login', 'login');
 router.route('/registration', 'registration');
 router.route('/profile', 'profile');
@@ -39,6 +43,7 @@ router.route('/patients', 'patients');
 router.route('/error', 'error');
 router.route('/groups', 'groups')
 router.route('/', 'root');
+router.route('/groups/', 'courses');
 
 
 function constructPage(innerHTML: string) {
