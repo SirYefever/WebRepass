@@ -1,0 +1,88 @@
+#summary-and-redact-button{
+    display:flex;
+    justify-content: space-between;
+}
+#summary-and-redact{
+    display: flex;
+    justify-content: space-between;
+}
+
+#summary{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#requirements-anno-notification #teachers-students{
+    display: flex;
+}
+
+#notifications #anno #requirements #teachers #students{
+    display: flex;
+    flex-direction: column;
+}
+
+.passed-div{
+    background-color: green;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+}
+
+.is-main-div{
+    background-color: green;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+}
+
+.failed-div{
+    background-color: red;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+}
+
+.undefined-div{
+    background-color: gray;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+}
+
+.student-div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.accept-button{
+    background-color: green;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+}
+
+.decline-button{
+    background-color: red;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    font-weight: bold;
+}
+
+.queued-student-div{
+    display: flex;
+    flex-direction: column;
+}
+
+.status-par-and-redact-button-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-shrink: 1;
+}

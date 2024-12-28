@@ -49,14 +49,14 @@ interface CampusCourseModel{
   semester: Semesters
 }
 
-enum CourseStatuses{
+export enum CourseStatuses{
   Created,
   OpenForAssigning,
   Started,
   Finished
 }
 
-enum Semesters{
+export enum Semesters{
   Autumn,
   Spring
 }
@@ -76,4 +76,50 @@ interface UserModel{
   fullName: string
 }
 
-export type { UserModel, Semesters, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+interface StudentDataModel{
+  id: string,
+  name: string,
+  email: string,
+  status: string,
+  midtermResult: string,
+  finalResult: string
+}
+
+interface CourseTeacherModel{
+  name: string,
+  email: string,
+  isMain: boolean
+}
+
+interface CourseInfoModel{
+  id: string,
+  name: string,
+  startYear: number,
+  maximumStudentsCount: number,
+  studentsEnrolledCount: number,
+  studentsInQueueCount: number,
+  semester: string,
+  requirements: string,
+  annotations: string,
+  status: string,
+  students: StudentDataModel[],
+  teachers: CourseTeacherModel[];
+}
+
+export enum StudentStatuses{
+  InQueue,
+  Accepted,
+  Declined
+}
+
+export enum EditCourseStudentStatusModel{
+  InQueue,
+  Accepted,
+  Declined
+}
+
+interface EditCourseStatusModel{
+  status: CourseStatuses;
+}
+
+export type { EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

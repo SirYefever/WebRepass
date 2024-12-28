@@ -1,12 +1,8 @@
 import coursesHtml from './courses.html?raw'
 import createPopupHtml from './popups/newCourse.html?raw'
-import {addHtmlToPage, constructPage2, loadCSS} from "../index";
+import {addHtmlToPage, constructPage2} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
-import {
-    CampusCourseModel,
-    CreateCampusCourseModel, Semesters, UserModel,
-    UserRoles
-} from "../api/interfaces.ts";
+import {CampusCourseModel, CourseStatuses, CreateCampusCourseModel, UserModel, UserRoles} from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
 
 async function coursesPageConstructor(){
@@ -50,7 +46,7 @@ function generateAndFillCourseTemplate(courseNumber: number, data: CampusCourseM
     const result = `
         <div class="course-div">
             <div class="main-part" id="main-part-div-${courseNumber}">
-                <p class="course-name" id="course-name-${courseNumber}">${data.name}</p>
+                <a href="/courses/${data.id}" class="course-name" id="course-name-${courseNumber}">${data.name}</a>
                 <p id="year-${courseNumber}">Year: ${data.startYear}</p>
                 <p id="semester-type-${courseNumber}">Semester: ${data.semester}</p>
                 <p id="slots-overall-${courseNumber}">Overall slots: ${data.maximumStudentsCount}</p>
@@ -71,6 +67,9 @@ function displayCourses(courses: CampusCourseModel[]) {
     courseList.innerHTML = "";
     let courseNumber = 1;
     courses.forEach(course => {
+        if (course.status == CourseStatuses.OpenForAssigning){
+            return;
+        }
         const listItem = document.createElement("li");
         listItem.innerHTML = generateAndFillCourseTemplate(courseNumber, course);
         courseList?.appendChild(listItem);

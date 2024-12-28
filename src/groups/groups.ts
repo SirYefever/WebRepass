@@ -9,7 +9,7 @@ import {getUserRoles} from "../utils/utils.ts";
 
 async function groupsPageConstructor(){
     constructPage2(groupsHtml, "/src/groups/groups.css");
-    addHtmlToPage(redactPopupHtml, "./src/groups/popups/popup.css");
+    addHtmlToPage(redactPopupHtml, "/src/groups/popups/popup.css");// deleted '.' symbol from start of the path
     addHtmlToPage(createPopupHtml);
     addHtmlToPage(deletePopupHtml);
     const curUserRoles = await getUserRoles() as UserRoles;

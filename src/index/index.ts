@@ -12,6 +12,7 @@ import footerHtml from '../footer/footer.html?raw'
 import {footerConstructor} from "../footer/footer.ts";
 import {coursesPageConstructor} from "../courses/courses.ts";
 import $ from 'jquery';
+import {singleCoursePageConstructor} from "../singleCourse/singleCourse.ts";
 
 
 let router = new Router();
@@ -37,6 +38,9 @@ router.template('groups', function () {
 router.template('courses', function () {
     coursesPageConstructor();
 });
+router.template('singleCourse', function () {
+    singleCoursePageConstructor();
+})
 router.route('/login', 'login');
 router.route('/registration', 'registration');
 router.route('/profile', 'profile');
@@ -45,6 +49,7 @@ router.route('/error', 'error');
 router.route('/groups', 'groups')
 router.route('/', 'root');
 router.route('/groups/', 'courses');
+router.route('/courses/', 'singleCourse');
 
 
 function constructPage(innerHTML: string) {
@@ -76,6 +81,7 @@ function constructPage2(innerHTML: string, cssFile: string) {
     headerDiv.id = "header-div";
     const subMainContainer = document.createElement("div");
     subMainContainer.id = "sub-main-container";
+    subMainContainer.style.visibility = "hidden";
     subMainContainer!.innerHTML = innerHTML;
 
     const footerDiv = document.createElement("div");
@@ -88,6 +94,16 @@ function constructPage2(innerHTML: string, cssFile: string) {
 
     footerConstructor();
     loadCSS(cssFile);
+}
+
+function makeSubMainContainerInvisible(){
+    const subMainContainer = document.getElementById("sub-main-container");
+    subMainContainer.style.visibility = "hidden";
+}
+
+function makeSubMainContainerVisible(){
+    const subMainContainer = document.getElementById("sub-main-container");
+    subMainContainer.style.visibility = "visible";
 }
 
 function addHtmlToPage(innerHTML: string, cssFile?: string) {
@@ -122,4 +138,4 @@ let subMainContainer: HTMLDivElement;
 window.addEventListener('load', router.retrieveRoute);
 window.addEventListener('hashchange', router.retrieveRoute);
 
-export {addHtmlToPage, loadCSS, refillSubMainContainer, constructPage, constructPage2  }
+export { makeSubMainContainerInvisible, makeSubMainContainerVisible, addHtmlToPage, loadCSS, refillSubMainContainer, constructPage, constructPage2  }

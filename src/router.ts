@@ -33,6 +33,8 @@ class Router {
         let route: () => void;
         if (url.includes("groups/")){
             route = this.resolveRoute("/groups/") as (() => void);
+        } else if (url.includes("courses/")){
+            route = this.resolveRoute("/courses/") as (() => void);
         } else {
             route = this.resolveRoute(url) as (() => void);
         }
