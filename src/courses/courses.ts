@@ -138,7 +138,7 @@ async function createNewCourse(groupId: string): Promise<void>{
     const maxCount = document.getElementById("new-course-maximum-student-count") as HTMLInputElement;
     const semesterValue = getSemesterFromCheckboxes();
     const mainTeacher = document.getElementById("teacher-select") as HTMLSelectElement;
-    const reqContent: string = $('#requiremets-div').summernote('code');
+    const reqContent: string = $('#requirements-div').summernote('code');
     const annoContent: string = $('#annotations-div').summernote('code');
     console.log(mainTeacher?.dataset.info);
     const createModel = {
@@ -172,7 +172,7 @@ async function createNewCourse(groupId: string): Promise<void>{
         springCheckbox.checked = false;
         const autumnCheckbox = document.getElementById("autumn") as HTMLInputElement;
         autumnCheckbox.checked = false;
-        $('#requiremets-div').summernote('code', '');
+        $('#requirements-div').summernote('code', '');
         $('#annotations-div').summernote('code', '');
     }
 

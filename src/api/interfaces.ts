@@ -138,4 +138,20 @@ interface EditCourseStudentMarkModel{
   mark: string
 }
 
-export type { EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+interface EditCampusCourseRequirementsAndAnnotationsModel{
+  requirements: string,
+  annotations: string
+}
+
+interface EditCampusCourseModel{
+  name: string,
+  startYear: number,
+  maximumStudentsCount: number,
+  semester: string,
+  requirements: string,
+  annotations: string,
+  mainTeacherId: string
+}
+
+
+export type { EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

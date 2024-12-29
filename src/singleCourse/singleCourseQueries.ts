@@ -1,5 +1,10 @@
 import {AuthData} from "../LocalDataStorage.ts";
-import {EditCourseStatusModel, EditCourseStudentMarkModel} from "../api/interfaces.ts";
+import {
+    EditCampusCourseModel,
+    EditCampusCourseRequirementsAndAnnotationsModel,
+    EditCourseStatusModel,
+    EditCourseStudentMarkModel
+} from "../api/interfaces.ts";
 
 async function getCourseInfoQuery(){
     const urlSplit = window.location.pathname.split("/");
@@ -69,4 +74,35 @@ async function changeAttestationMarkQuery(studentId: string, requestBody: EditCo
     return response;
 }
 
-export { changeAttestationMarkQuery, getCourseInfoQuery, changeQueuedStudentStatusQuery, changeCourseStatusQuery};
+
+async function changeCourseSummaryTeacherQuery(requestBody: EditCampusCourseRequirementsAndAnnotationsModel) {
+    const urlSplit = window.location.pathname.split("/");
+    const courseId = urlSplit[urlSplit.length - 1];
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/requirements-and-annotations", {
+        method: "PUT",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+    })
+    return response;
+}
+
+async function changeCourseSummaryAdminQuery(requestBody: EditCampusCourseModel) {
+    const urlSplit = window.location.pathname.split("/");
+    const courseId = urlSplit[urlSplit.length - 1];
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId, {
+        method: "PUT",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+    })
+    return response;
+}
+
+export { changeCourseSummaryAdminQuery, changeCourseSummaryTeacherQuery, changeAttestationMarkQuery, getCourseInfoQuery, changeQueuedStudentStatusQuery, changeCourseStatusQuery};

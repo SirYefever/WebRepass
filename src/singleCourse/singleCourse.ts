@@ -1,10 +1,11 @@
 import courseHtml from './singleCourse.html?raw'
 import redactPopup from './popups/redactStatusPopup.html?raw'
 import attestationHtml from './popups/attestation.html?raw'
+import redactSummaryTeacherHtml from './popups/redactSummaryTeacher.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {
     CourseInfoModel,
-    CourseStatuses,
+    CourseStatuses, CourseTeacherModel, EditCampusCourseModel, EditCampusCourseRequirementsAndAnnotationsModel,
     EditCourseStatusModel,
     EditCourseStudentMarkModel,
     Mark,
@@ -15,19 +16,34 @@ import {
 } from "../api/interfaces.ts";
 import {marked} from 'marked';
 import {getUserRoles} from "../utils/utils.ts";
-import {changeCourseStatusQuery, changeQueuedStudentStatusQuery, getCourseInfoQuery} from "./singleCourseQueries.ts";
+import {
+    changeCourseStatusQuery, changeCourseSummaryAdminQuery,
+    changeCourseSummaryTeacherQuery,
+    changeQueuedStudentStatusQuery,
+    getCourseInfoQuery
+} from "./singleCourseQueries.ts";
 import {changeAttestationMarkQuery} from "./singleCourseQueries.ts";
+
+let mainTeacher: CourseTeacherModel;
+let courseData: CourseInfoModel;
+
 
 async function singleCoursePageConstructor(){
     constructPage2(courseHtml, "/src/singleCourse/singleCourse.css");
     addHtmlToPage(redactPopup, "/src/singleCourse/popups/popup.css");
     addHtmlToPage(attestationHtml);
-    const courseData = await getCourseInfoQuery() as CourseInfoModel;
+    addHtmlToPage(redactSummaryTeacherHtml);
+    courseData = await getCourseInfoQuery() as CourseInfoModel;
     const curUserRoles = await getUserRoles() as UserRoles;
 
     const courseNamePar = document.getElementById("course-name");
     // @ts-ignore
     courseNamePar.textContent = courseData.name;
+
+    const summaryRedactButton = document.getElementById("redact-course-summary-button");
+    summaryRedactButton.addEventListener("click", async () => {
+
+    });
 
     const statusDiv = document.querySelector(".status-par-and-button-div") as HTMLDivElement;
     if (curUserRoles.isAdmin || curUserRoles.isTeacher){// Wrong??? One has to be a teacher for this specific course,
@@ -64,6 +80,10 @@ async function singleCoursePageConstructor(){
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
     courseData.teachers.forEach(teacher => {
+        if (teacher.isMain){
+            mainTeacher = teacher;
+        }
+
         let listItem = document.createElement("li");
         listItem.setAttribute("id", "teacher-list-item");
 
@@ -165,9 +185,9 @@ async function changeCourseStatus(): Promise<void>{
 
 
 
-async function constructStudentsUl(courseData?: CourseInfoModel){
-    if (courseData === null || courseData === undefined){
-        courseData = await getCourseInfoQuery() as CourseInfoModel;
+async function constructStudentsUl(courseDataInput?: CourseInfoModel){
+    if (courseDataInput === null || courseDataInput === undefined){
+        courseDataInput = await getCourseInfoQuery() as CourseInfoModel;
     }
 
 
@@ -175,7 +195,7 @@ async function constructStudentsUl(courseData?: CourseInfoModel){
     studentsList.innerHTML = "";
     let studentsEnrolled = 0;
     let studentsInQueue = 0;
-    courseData.students.forEach(student => {
+    courseDataInput.students.forEach(student => {
         if (student.status === StudentStatuses[StudentStatuses.Accepted]) {
             studentsEnrolled++;
         } else if (student.status === StudentStatuses[StudentStatuses.InQueue]){
@@ -361,6 +381,91 @@ async function changeQueuedStudentStatus(studentId: string, studentStatus: strin
     await changeQueuedStudentStatusQuery(studentId, studentStatus);
     await constructStudentsUl();
 }
+
+
+
+function popupRedactSummary(){
+    toggleRedactSummaryPopup();
+    const userRoles = await getUserRoles();
+
+    if (userRoles.isAdmin){
+        //save/cancel buttons, their 'onclicks'
+    }
+
+    var saveButton = document.getElementById("confirm-redact-status-button") as HTMLButtonElement;
+    saveButton?.addEventListener("click", () => changeCourseStatus())
+    saveButton.disabled = true;
+    var cancelButton = document.getElementById("cancel-redact-status-button");
+    cancelButton?.addEventListener("click", toggleRedactStatusPopup)
+
+    const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
+    const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
+    const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
+    openedCheckbox.onclick = () => {
+        openedCheckbox.checked = false;
+        startedCheckbox.checked = false;
+        finishedCheckbox.checked = false;
+
+        openedCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+    startedCheckbox.onclick = () => {
+        openedCheckbox.checked = false;
+        startedCheckbox.checked = false;
+        finishedCheckbox.checked = false;
+
+        startedCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+    finishedCheckbox.onclick = () => {
+        openedCheckbox.checked = false;
+        startedCheckbox.checked = false;
+        finishedCheckbox.checked = false;
+
+        finishedCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+
+}
+
+async function toggleRedactSummaryPopup(){
+    const userRoles = await getUserRoles();
+
+    if (userRoles.isAdmin){
+        var popup = document.getElementById("redact-summary-admin-span");
+        popup?.classList.toggle("show");
+    } else {
+        var popup = document.getElementById("redact-summary-teacher-span");
+        popup?.classList.toggle("show");
+    }
+}
+
+
+
+
+async function changeCourseSummaryTeacher(requestBody: EditCampusCourseRequirementsAndAnnotationsModel) {
+    const response = await changeCourseSummaryTeacherQuery(requestBody);
+    if (response.ok) {
+        toggleRedactSummaryPopup();
+        toggleSuccessPopup();
+        //TODO: call refresh
+    }
+    else {
+        toggleFailurePopup();
+    }
+}
+async function changeCourseSummaryAdmin(requestBody: EditCampusCourseModel) {
+    const response = await changeCourseSummaryAdminQuery(requestBody);
+    if (response.ok) {
+        toggleRedactSummaryPopup();
+        toggleSuccessPopup();
+        //TODO: call refresh
+    }
+    else {
+        toggleFailurePopup();
+    }
+}
+
 
 
 

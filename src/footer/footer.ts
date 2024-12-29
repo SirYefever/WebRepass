@@ -65,7 +65,7 @@ async function registerUserQuery() {
 }
 
 async function signUpForCourse(token: string){
-    const courseId = "cee0ef9a-a19a-4ee1-1e83-08dd281e240c";
+    const courseId = "34008266-112d-4046-1e84-08dd281e240c";
     const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/sign-up", {
         method: "POST",
         headers: {
