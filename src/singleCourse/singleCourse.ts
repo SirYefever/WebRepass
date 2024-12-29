@@ -2,7 +2,6 @@ import courseHtml from './singleCourse.html?raw'
 import redactPopup from './popups/redactStatusPopup.html?raw'
 import attestationHtml from './popups/attestation.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
-import {AuthData} from "../LocalDataStorage.ts";
 import {
     CourseInfoModel,
     CourseStatuses,
@@ -16,12 +15,14 @@ import {
 } from "../api/interfaces.ts";
 import {marked} from 'marked';
 import {getUserRoles} from "../utils/utils.ts";
+import {changeCourseStatusQuery, changeQueuedStudentStatusQuery, getCourseInfoQuery} from "./singleCourseQueries.ts";
+import {changeAttestationMarkQuery} from "./singleCourseQueries.ts";
 
 async function singleCoursePageConstructor(){
     constructPage2(courseHtml, "/src/singleCourse/singleCourse.css");
     addHtmlToPage(redactPopup, "/src/singleCourse/popups/popup.css");
     addHtmlToPage(attestationHtml);
-    const courseData = await getCourseInfo() as CourseInfoModel;
+    const courseData = await getCourseInfoQuery() as CourseInfoModel;
     const curUserRoles = await getUserRoles() as UserRoles;
 
     const courseNamePar = document.getElementById("course-name");
@@ -88,9 +89,85 @@ async function singleCoursePageConstructor(){
     makeSubMainContainerVisible();
 }
 
+
+
+
+
+function popupRedactStatus(){
+    toggleRedactStatusPopup();
+
+    var saveButton = document.getElementById("confirm-redact-status-button") as HTMLButtonElement;
+    saveButton?.addEventListener("click", () => changeCourseStatus())
+    saveButton.disabled = true;
+    var cancelButton = document.getElementById("cancel-redact-status-button");
+    cancelButton?.addEventListener("click", toggleRedactStatusPopup)
+
+    const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
+    const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
+    const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
+    openedCheckbox.onclick = () => {
+        openedCheckbox.checked = false;
+        startedCheckbox.checked = false;
+        finishedCheckbox.checked = false;
+
+        openedCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+    startedCheckbox.onclick = () => {
+        openedCheckbox.checked = false;
+        startedCheckbox.checked = false;
+        finishedCheckbox.checked = false;
+
+        startedCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+    finishedCheckbox.onclick = () => {
+        openedCheckbox.checked = false;
+        startedCheckbox.checked = false;
+        finishedCheckbox.checked = false;
+
+        finishedCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+
+}
+
+function toggleRedactStatusPopup(){
+    var popup = document.getElementById("redact-status-span");
+    popup?.classList.toggle("show");
+}
+
+async function changeCourseStatus(): Promise<void>{
+
+    const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
+    const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
+    // const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
+
+    let requestBody = {} as EditCourseStatusModel;
+    openedCheckbox.checked ? requestBody = {status: CourseStatuses.OpenForAssigning} :
+        startedCheckbox.checked ? requestBody = {status: CourseStatuses.Started} :
+        requestBody = {status: CourseStatuses.Finished}
+
+    const response = await changeCourseStatusQuery(requestBody);
+    if (response.ok) {
+        toggleRedactStatusPopup();
+        toggleSuccessPopup();
+        const statusPar = document.getElementById("status-par");
+        // @ts-ignore
+        statusPar.textContent = "Status:" + CourseStatuses[requestBody.status];
+    }
+    else {
+        toggleFailurePopup();
+    }
+    throw response;
+}
+
+
+
+
 async function constructStudentsUl(courseData?: CourseInfoModel){
     if (courseData === null || courseData === undefined){
-        courseData = await getCourseInfo() as CourseInfoModel;
+        courseData = await getCourseInfoQuery() as CourseInfoModel;
     }
 
 
@@ -204,9 +281,7 @@ function manageStudentStatus(studentData: StudentDataModel): HTMLDivElement | un
     } else {
         return;
     }
-    return;
 }
-
 
 function createAttestationStatusDiv(mark: Mark){
     const div = document.createElement("div");
@@ -224,131 +299,6 @@ function createAttestationStatusDiv(mark: Mark){
 
     return div;
 }
-
-
-
-
-
-async function getCourseInfo(){
-    const urlSplit = window.location.pathname.split("/");
-    const courseId = urlSplit[urlSplit.length - 1];
-    const authData = new AuthData();
-    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/details", {
-        method: "GET",
-        headers: {
-            Authorization: "Bearer " + authData.token
-        }
-    })
-    if (response.ok) {
-        return (await response.json());
-    }
-    throw response;
-}
-
-async function changeQueuedStudentStatus(studentId: string, studentStatus: string) {
-    const urlSplit = window.location.pathname.split("/");
-    const courseId = urlSplit[urlSplit.length - 1];
-    const body = {status: studentStatus};
-    const authData = new AuthData();
-    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId +
-        "/student-status/" + studentId, {
-        method: "POST",
-        headers: {
-            Authorization: "Bearer " + authData.token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-    })
-    if (response.ok) {
-        await constructStudentsUl();
-        return (await response.json());
-    }
-    throw response;
-}
-
-
-
-function popupRedactStatus(){
-    toggleRedactStatusPopup();
-
-    var saveButton = document.getElementById("confirm-redact-status-button") as HTMLButtonElement;
-    saveButton?.addEventListener("click", () => changeCourseStatus())
-    saveButton.disabled = true;
-    var cancelButton = document.getElementById("cancel-redact-status-button");
-    cancelButton?.addEventListener("click", toggleRedactStatusPopup)
-
-    const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
-    const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
-    const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
-    openedCheckbox.onclick = () => {
-        openedCheckbox.checked = false;
-        startedCheckbox.checked = false;
-        finishedCheckbox.checked = false;
-
-        openedCheckbox.checked = true;
-        saveButton.disabled = false;
-    }
-    startedCheckbox.onclick = () => {
-        openedCheckbox.checked = false;
-        startedCheckbox.checked = false;
-        finishedCheckbox.checked = false;
-
-        startedCheckbox.checked = true;
-        saveButton.disabled = false;
-    }
-    finishedCheckbox.onclick = () => {
-        openedCheckbox.checked = false;
-        startedCheckbox.checked = false;
-        finishedCheckbox.checked = false;
-
-        finishedCheckbox.checked = true;
-        saveButton.disabled = false;
-    }
-
-}
-
-function toggleRedactStatusPopup(){
-    var popup = document.getElementById("redact-status-span");
-    popup?.classList.toggle("show");
-}
-
-async function changeCourseStatus(): Promise<void>{
-    const urlSplit = window.location.pathname.split("/");
-    const courseId = urlSplit[urlSplit.length - 1];
-    const authData = new AuthData();
-
-    const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
-    const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
-    // const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
-
-    let requestBody = {} as EditCourseStatusModel;
-    openedCheckbox.checked ? requestBody = {status: CourseStatuses.OpenForAssigning} :
-        startedCheckbox.checked ? requestBody = {status: CourseStatuses.Started} :
-        requestBody = {status: CourseStatuses.Finished}
-
-    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/status", {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + authData.token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestBody)
-    })
-    if (response.ok) {
-        toggleRedactStatusPopup();
-        toggleSuccessPopup();
-        const statusPar = document.getElementById("status-par");
-        // @ts-ignore
-        statusPar.textContent += "Status:" + requestBody.status.toString();
-    }
-    else {
-        toggleFailurePopup();
-    }
-    throw response;
-}
-
-
-
 
 function popupRedactMark(markType: MarkType, studentData: StudentDataModel){
     toggleRedactMarkPopup();
@@ -385,9 +335,6 @@ function toggleRedactMarkPopup(){
 }
 
 async function changeAttestationMark(studentId: string, markType: MarkType): Promise<void>{
-    const urlSplit = window.location.pathname.split("/");
-    const courseId = urlSplit[urlSplit.length - 1];
-    const authData = new AuthData();
 
     const successCheckbox = document.getElementById("success-checkbox") as HTMLInputElement;
 
@@ -397,14 +344,7 @@ async function changeAttestationMark(studentId: string, markType: MarkType): Pro
     successCheckbox.checked ? requestBody = {mark: Mark[Mark.Passed], markType: MarkType[markType]} :
         failCheckbox.checked ? requestBody = {mark: Mark[Mark.Failed], markType: MarkType[markType]} : {};
 
-    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/marks/" + studentId, {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + authData.token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestBody)
-    })
+    const response = await changeAttestationMarkQuery(studentId, requestBody);
     if (response.ok) {
         toggleRedactMarkPopup();
         toggleSuccessPopup();
@@ -413,7 +353,13 @@ async function changeAttestationMark(studentId: string, markType: MarkType): Pro
     else {
         toggleFailurePopup();
     }
-    throw response;
+}
+
+
+
+async function changeQueuedStudentStatus(studentId: string, studentStatus: string) {
+    await changeQueuedStudentStatusQuery(studentId, studentStatus);
+    await constructStudentsUl();
 }
 
 
@@ -497,7 +443,6 @@ function toggleFailurePopup(){
         }, 500);
     }, 1500);
 }
-
 
 
 export {singleCoursePageConstructor};

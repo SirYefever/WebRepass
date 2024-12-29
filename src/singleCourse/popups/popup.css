@@ -55,7 +55,23 @@
     transition: opacity 0.5s ease-out;
 }
 
-#redact-popup-div #redact-status-span #redact-mark-div {
+#redact-mark-div {
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 40%;
+}
+
+#redact-popup-div{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 40%;
+}
+
+#redact-status-span{
     background-color: black;
     left: 15%;
     top: 15%;
