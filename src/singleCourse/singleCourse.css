@@ -46,12 +46,23 @@
     font-weight: bold;
 }
 
-.undefined-div{
-    background-color: gray;
+.mark-div{
     color: white;
     width: fit-content;
     height: fit-content;
     font-weight: bold;
+}
+
+.undefined-div{
+    background-color: gray;
+}
+
+.passed-div{
+    background-color: green;
+}
+
+.failed-div{
+    background-color: darkred;
 }
 
 .student-div{
@@ -85,4 +96,25 @@
     flex-direction: row;
     justify-content: space-between;
     flex-shrink: 1;
+}
+
+.attestations-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex: 2;
+}
+
+.student-div-main{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.student-accepted{
+    color: green;
+}
+
+.student-declined{
+    color: darkred;
 }

@@ -1,6 +1,6 @@
 
 import profileHTML from './profile.html?raw'
-import { constructPage2, refillSubMainContainer } from '../index/index'
+import {constructPage2, makeSubMainContainerVisible, refillSubMainContainer} from '../index/index'
 import { constructPage } from '../index/index'
 import { ProfileData } from "../LocalDataStorage.ts";
 import { ProfileApiResponse as ProfileApiInterface } from '../api/interfaces.ts';
@@ -67,6 +67,7 @@ function profileConstructor() {
     if (saveChangesButton !== null) {
         saveChangesButton.onclick = redactProfileLogic;
     }
+    makeSubMainContainerVisible();
 }
 
 export { profileLogic, profileGetRequest as profileRequest, profileConstructor }

@@ -8,11 +8,11 @@ interface ProfileApiInterface {
 }
 
 interface UserRegisterModel {
-  fullName?: string,
-  birthDate?: string,
-  email?: string,
-  password?: string,
-  confirmPassword?: string,
+  fullName: string,
+  birthDate: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
 }
 
 interface UserLoginModel {
@@ -122,4 +122,20 @@ interface EditCourseStatusModel{
   status: CourseStatuses;
 }
 
-export type { EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+export enum MarkType{
+  Midterm,
+  Final
+}
+
+export enum Mark{
+  NotDefined,
+  Passed,
+  Failed
+}
+
+interface EditCourseStudentMarkModel{
+  markType: string,
+  mark: string
+}
+
+export type { EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

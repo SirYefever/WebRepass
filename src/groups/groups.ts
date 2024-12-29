@@ -1,4 +1,4 @@
-import {addHtmlToPage, constructPage2} from "../index";
+import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import groupsHtml from './groups.html?raw'
 import redactPopupHtml from './popups/redactPopup.html?raw'
 import createPopupHtml from './popups/newGroup.html?raw'
@@ -22,6 +22,7 @@ async function groupsPageConstructor(){
         createNewDiv?.appendChild(createNewButton);
     }
     displayGroupList();
+    makeSubMainContainerVisible();
 }
 
 async function displayGroupList(){

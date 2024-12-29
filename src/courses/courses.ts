@@ -1,6 +1,6 @@
 import coursesHtml from './courses.html?raw'
 import createPopupHtml from './popups/newCourse.html?raw'
-import {addHtmlToPage, constructPage2} from "../index";
+import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
 import {CampusCourseModel, CourseStatuses, CreateCampusCourseModel, UserModel, UserRoles} from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
@@ -24,6 +24,7 @@ async function coursesPageConstructor(){
     $('.summernote').summernote({
         dialogsInBody: true
     });
+    makeSubMainContainerVisible();
 }
 
 async function fetchCourses(): Promise<CampusCourseModel[]>{

@@ -1,17 +1,26 @@
 import courseHtml from './singleCourse.html?raw'
 import redactPopup from './popups/redactStatusPopup.html?raw'
+import attestationHtml from './popups/attestation.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {AuthData} from "../LocalDataStorage.ts";
 import {
-    CourseInfoModel, CourseStatuses, EditCourseStatusModel,
-    StudentDataModel, StudentStatuses, UserRoles
+    CourseInfoModel,
+    CourseStatuses,
+    EditCourseStatusModel,
+    EditCourseStudentMarkModel,
+    Mark,
+    MarkType,
+    StudentDataModel,
+    StudentStatuses,
+    UserRoles
 } from "../api/interfaces.ts";
-import { marked } from 'marked';
+import {marked} from 'marked';
 import {getUserRoles} from "../utils/utils.ts";
 
 async function singleCoursePageConstructor(){
     constructPage2(courseHtml, "/src/singleCourse/singleCourse.css");
     addHtmlToPage(redactPopup, "/src/singleCourse/popups/popup.css");
+    addHtmlToPage(attestationHtml);
     const courseData = await getCourseInfo() as CourseInfoModel;
     const curUserRoles = await getUserRoles() as UserRoles;
 
@@ -33,19 +42,23 @@ async function singleCoursePageConstructor(){
 
 
     const statusPar = document.getElementById("status-par");
+    // @ts-ignore
     statusPar.textContent += courseData.status;
     const yearPar = document.getElementById("year-par");
+    // @ts-ignore
     yearPar.textContent += courseData.startYear.toString();
     const totalCountPar = document.getElementById("total-count-par");
+    // @ts-ignore
     totalCountPar.textContent += courseData.maximumStudentsCount.toString();
-    const pendingPar = document.getElementById("students-pending-par");
     const semesterPar = document.getElementById("semester-par");
+    // @ts-ignore
     semesterPar.textContent += courseData.semester;
-    const enrolledPar = document.getElementById("students-enrolled-par");
 
     const requirementsPar = document.getElementById("requirements-content");
+    // @ts-ignore
     requirementsPar.innerHTML = await marked(courseData.requirements);
     const annoPar = document.getElementById("anno-content");
+    // @ts-ignore
     annoPar.innerHTML = await marked(courseData.requirements);
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
@@ -70,90 +83,148 @@ async function singleCoursePageConstructor(){
 
         teachersList.append(listItem);
     })
-
-    const studentsList = document.getElementById("students-list") as HTMLUListElement;
-    let studentsEnrolled = 0;
-    let studentsInQueue = 0;
-    courseData.students.forEach(student => {
-        if (student.status === StudentStatuses.Accepted) {
-            studentsEnrolled++;
-        } else if (student.status === StudentStatuses.InQueue){
-            studentsInQueue++;
-        }
-        let listItem = document.createElement("li");
-        listItem.innerHTML = createAndFillUserTemplate(student);
-        studentsList.appendChild(listItem);
-    })
-
-    enrolledPar.textContent += studentsEnrolled.toString();
-    pendingPar.textContent += studentsInQueue.toString();
+    await constructStudentsUl(courseData);
 
     makeSubMainContainerVisible();
 }
 
+async function constructStudentsUl(courseData?: CourseInfoModel){
+    if (courseData === null || courseData === undefined){
+        courseData = await getCourseInfo() as CourseInfoModel;
+    }
+
+
+    const studentsList = document.getElementById("students-list") as HTMLUListElement;
+    studentsList.innerHTML = "";
+    let studentsEnrolled = 0;
+    let studentsInQueue = 0;
+    courseData.students.forEach(student => {
+        if (student.status === StudentStatuses[StudentStatuses.Accepted]) {
+            studentsEnrolled++;
+        } else if (student.status === StudentStatuses[StudentStatuses.InQueue]){
+            studentsInQueue++;
+        }
+        let listItem = document.createElement("li");
+        listItem.appendChild(createAndFillUserTemplate(student));
+        // listItem.innerHTML = createAndFillUserTemplate(student);
+        studentsList.appendChild(listItem);
+    })
+
+    const pendingPar = document.getElementById("students-pending-par");
+    const enrolledPar = document.getElementById("students-enrolled-par");
+
+    // @ts-ignore
+    enrolledPar.textContent += studentsEnrolled.toString();
+    // @ts-ignore
+    pendingPar.textContent += studentsInQueue.toString();
+}
+
 function createAndFillUserTemplate(studentData: StudentDataModel){
-    let result = `
-    <div class="student-div">
-        <div class="student-div-main">
-            <p class="student-name-par">${studentData.name}</p>
-            <p class="student-status-par">Status: ${studentData.status}</p>
-            <p class="student-email-par">${studentData.email}</p>
-        </div>
-        ${manageStudentStatus(studentData)}
-    </div>
-    `
-    return result;
-}
+    const namePar = document.createElement("p");
+    namePar.textContent = studentData.name;
+    namePar.classList.add("student-name-par")
 
-function manageStudentStatus(studentData: StudentDataModel):string{
-    let result = ``;
-    if (studentData.status === "InQueue"){
-        result = `
-            <div class="queued-student-div" id="queued-student-div-${studentData.id}">
-                <button class="accept-button">Accept</button>
-                <button class="decline-button">Decline</button>
-            </div>
-        `;
-        const queuedStudentDiv = document.getElementById(`queued-student-div-${studentData.id}`);
-        const acceptButton = queuedStudentDiv?.querySelector("#accept-button") as HTMLButtonElement;
-        acceptButton.addEventListener("click", () => {acceptQueuedStudent(studentData.id, CourseStatuses.Accepted)})
-        //TODO Check if accept button works, make the decline functionality
-        const declineButton = queuedStudentDiv?.querySelector("#decline-button") as HTMLButtonElement;
-    } else if (studentData.status === "Accepted"){
-        result = `
-        <div class="intermediate-attestation">
-            <a>intermediate - </a>
-            <div>${createAttestationStatusDiv(studentData.midtermResult)}</div>
-        </div>
-        <div class="final-attestation">
-            <a>final - </a>
-            <div>${createAttestationStatusDiv(studentData.midtermResult)}</div>
-        </div>
-        `;
-    }else {
-        return ``;
+    const statusPar = document.createElement("p");
+    statusPar.textContent = `Status: ${studentData.status}`;
+    statusPar.classList.add("student-status-par")
+    if (studentData.status === StudentStatuses[StudentStatuses.Accepted]) {
+        statusPar.classList.add("student-accepted");
+    } else {
+        statusPar.classList.add("student-declined");
     }
-    return result;
-}
+
+    const emailPar = document.createElement("p");
+    emailPar.textContent = studentData.email;
+    emailPar.classList.add("student-email-par");
 
 
-function createAttestationStatusDiv(intermetiateAttestationResult: string){
-    let result = ``;
-    if (intermetiateAttestationResult == "NotDefined"){
-        result = `
-        <div class="undefined-div">No mark</div>
-        `;
-    } else if (intermetiateAttestationResult == "Passed"){
-        result = `
-        <div class="passed-div">Success</div>
-        `;
-    } else{
-        result = `
-        <div class="failed-div">Failed</div>
-        `;
+    const studentDiv = document.createElement("div");
+    studentDiv.classList.add("student-div");
+
+    const dataStudentDiv = document.createElement("div");
+    dataStudentDiv.classList.add("student-div-main");
+    dataStudentDiv.appendChild(namePar);
+    dataStudentDiv.appendChild(statusPar);
+    dataStudentDiv.appendChild(emailPar);
+    studentDiv.appendChild(dataStudentDiv);
+    const studentStatusDiv = manageStudentStatus(studentData);
+    if (studentStatusDiv) {
+        studentDiv.appendChild(<HTMLDivElement>manageStudentStatus(studentData));
     }
-    return result;
+    return studentDiv;
 }
+
+function manageStudentStatus(studentData: StudentDataModel): HTMLDivElement | undefined  {
+    if (studentData.status === StudentStatuses[StudentStatuses.InQueue]){
+        const queuedStudentDiv = document.createElement("div");
+        queuedStudentDiv.id = `queued-student-${studentData.id}`;
+        queuedStudentDiv.classList.add("queued-student-div");
+
+        const acceptButton = document.createElement("button");
+        acceptButton.textContent = "Accept";
+        acceptButton.classList.add("accept-button");
+        acceptButton.addEventListener("click", () => {changeQueuedStudentStatus(studentData.id, StudentStatuses[StudentStatuses.Accepted])});
+        queuedStudentDiv.appendChild(acceptButton);
+
+
+        const declineButton = document.createElement("button");
+        declineButton.textContent = "Decline";
+        declineButton.classList.add("decline-button");
+        declineButton.addEventListener("click", () => {changeQueuedStudentStatus(studentData.id, StudentStatuses[StudentStatuses.Declined])});
+        queuedStudentDiv.appendChild(declineButton);
+
+        return queuedStudentDiv;
+    } else if (studentData.status === StudentStatuses[StudentStatuses.Accepted]){
+        const attestationsDiv = document.createElement("div");
+        attestationsDiv.classList.add("attestations-div");
+
+        const intermediateAttestationDiv = document.createElement("div");
+        let intermediateAttestation = document.createElement("button");
+        intermediateAttestation.textContent = "Intermediate attestation - ";
+        intermediateAttestation.id = `button-${studentData.id}`;
+        intermediateAttestation?.addEventListener("click", () => popupRedactMark(MarkType.Midterm, studentData));
+
+        intermediateAttestationDiv.appendChild(intermediateAttestation);
+        // @ts-ignore
+        intermediateAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.midtermResult]));
+        attestationsDiv.appendChild(intermediateAttestationDiv);
+
+
+        const finalAttestationDiv = document.createElement("div");
+        const finalAttestation = document.createElement("button");
+        finalAttestation.textContent = "Final attestation - ";
+        finalAttestation.onclick = () => popupRedactMark(MarkType.Final, studentData);
+        finalAttestationDiv.appendChild(finalAttestation);
+        // @ts-ignore
+        finalAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.finalResult]));
+        attestationsDiv.appendChild(finalAttestationDiv);
+
+
+        return attestationsDiv;
+    } else {
+        return;
+    }
+    return;
+}
+
+
+function createAttestationStatusDiv(mark: Mark){
+    const div = document.createElement("div");
+    div.classList.add("mark-div");
+    if (mark === Mark.NotDefined){
+        div.classList.add("undefined-div");
+        div.textContent = "No mark"
+    } else if (mark === Mark.Passed){
+        div.classList.add("passed-div");
+        div.textContent = "Success"
+    } else {
+        div.classList.add("failed-div");
+        div.textContent = "Failed"
+    }
+
+    return div;
+}
+
 
 
 
@@ -174,23 +245,27 @@ async function getCourseInfo(){
     throw response;
 }
 
-async function acceptQueuedStudent(studentId: string, studentStatus: EditCourseStatusModel) {
+async function changeQueuedStudentStatus(studentId: string, studentStatus: string) {
     const urlSplit = window.location.pathname.split("/");
     const courseId = urlSplit[urlSplit.length - 1];
+    const body = {status: studentStatus};
     const authData = new AuthData();
     const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId +
         "/student-status/" + studentId, {
         method: "POST",
         headers: {
-            Authorization: "Bearer " + authData.token
+            Authorization: "Bearer " + authData.token,
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify(studentStatus)
+        body: JSON.stringify(body)
     })
     if (response.ok) {
+        await constructStudentsUl();
         return (await response.json());
     }
     throw response;
 }
+
 
 
 function popupRedactStatus(){
@@ -263,7 +338,77 @@ async function changeCourseStatus(): Promise<void>{
         toggleRedactStatusPopup();
         toggleSuccessPopup();
         const statusPar = document.getElementById("status-par");
+        // @ts-ignore
         statusPar.textContent += "Status:" + requestBody.status.toString();
+    }
+    else {
+        toggleFailurePopup();
+    }
+    throw response;
+}
+
+
+
+
+function popupRedactMark(markType: MarkType, studentData: StudentDataModel){
+    toggleRedactMarkPopup();
+
+    var saveButton = document.getElementById("confirm-redact-mark-button") as HTMLButtonElement;
+    saveButton?.addEventListener("click", () => changeAttestationMark(studentData.id, markType))
+    saveButton.disabled = true;
+    var cancelButton = document.getElementById("cancel-redact-mark-button");
+    cancelButton?.addEventListener("click", toggleRedactMarkPopup)
+
+    const successCheckbox = document.getElementById("success-checkbox") as HTMLInputElement;
+
+    const failCheckbox = document.getElementById("fail-checkbox") as HTMLInputElement;
+
+    successCheckbox.onclick = () => {
+        successCheckbox.checked = false;
+        failCheckbox.checked = false;
+
+        successCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+    failCheckbox.onclick = () => {
+        successCheckbox.checked = false;
+        failCheckbox.checked = false;
+
+        failCheckbox.checked = true;
+        saveButton.disabled = false;
+    }
+}
+
+function toggleRedactMarkPopup(){
+    var popup = document.getElementById("redact-mark-span");
+    popup?.classList.toggle("show");
+}
+
+async function changeAttestationMark(studentId: string, markType: MarkType): Promise<void>{
+    const urlSplit = window.location.pathname.split("/");
+    const courseId = urlSplit[urlSplit.length - 1];
+    const authData = new AuthData();
+
+    const successCheckbox = document.getElementById("success-checkbox") as HTMLInputElement;
+
+    const failCheckbox = document.getElementById("fail-checkbox") as HTMLInputElement;
+
+    let requestBody = {} as EditCourseStudentMarkModel;
+    successCheckbox.checked ? requestBody = {mark: Mark[Mark.Passed], markType: MarkType[markType]} :
+        failCheckbox.checked ? requestBody = {mark: Mark[Mark.Failed], markType: MarkType[markType]} : {};
+
+    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/marks/" + studentId, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+    })
+    if (response.ok) {
+        toggleRedactMarkPopup();
+        toggleSuccessPopup();
+        await constructStudentsUl();
     }
     else {
         toggleFailurePopup();
@@ -352,5 +497,7 @@ function toggleFailurePopup(){
         }, 500);
     }, 1500);
 }
+
+
 
 export {singleCoursePageConstructor};

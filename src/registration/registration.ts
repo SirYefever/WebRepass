@@ -2,11 +2,10 @@ import registrationHtml from './registration.html?raw'
 import { UserRegisterModel } from '../api/interfaces'
 import { GenderEnum } from '../api/interfaces'
 import { SpecialityGetResponse } from '../api/interfaces'
-import { constructPage, constructPage2 } from '../index/index'
+import {constructPage, constructPage2, makeSubMainContainerVisible} from '../index/index'
 import { AuthData } from '../LocalDataStorage'
 
 async function registerUserQuery(requestBody: UserRegisterModel) {
-    let result = null;
     const response = await fetch("https://camp-courses.api.kreosoft.space/registration", {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -41,6 +40,7 @@ async function constructRegPage() {
     constructPage2(registrationHtml, "/src/registration/registration.css");
     let regButton = document.getElementById("reg-button");
     regButton!.onclick = regButtonOnclick;
+    makeSubMainContainerVisible();
 }
 
 export { constructRegPage }

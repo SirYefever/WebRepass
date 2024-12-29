@@ -1,5 +1,5 @@
 import loginHTML from './login.html?raw'
-import { constructPage2 } from '../index/index'
+import {constructPage2, makeSubMainContainerVisible} from '../index/index'
 import { AuthData, ProfileData } from "../LocalDataStorage.ts";
 import { UserLoginModel } from '../api/interfaces.ts';
 import {footerConstructor} from "../footer/footer.ts";
@@ -41,6 +41,7 @@ function loginConstructor() {
     loginButton.onclick = loginLogic
 
     footerConstructor();
+    makeSubMainContainerVisible();
 }
 
 export { login, loginConstructor }
