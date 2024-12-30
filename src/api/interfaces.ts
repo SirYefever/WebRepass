@@ -153,5 +153,10 @@ interface EditCampusCourseModel{
   mainTeacherId: string
 }
 
+interface UserInfoModel{
+  fullname: string,
+  email: string,
+  birthDate: string,
+}
 
-export type { EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+export type { UserInfoModel, EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

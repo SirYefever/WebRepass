@@ -1,8 +1,6 @@
 import registrationHtml from './registration.html?raw'
 import { UserRegisterModel } from '../api/interfaces'
-import { GenderEnum } from '../api/interfaces'
-import { SpecialityGetResponse } from '../api/interfaces'
-import {constructPage, constructPage2, makeSubMainContainerVisible} from '../index/index'
+import {constructPage2, makeSubMainContainerVisible} from '../index/index'
 import { AuthData } from '../LocalDataStorage'
 
 async function registerUserQuery(requestBody: UserRegisterModel) {
@@ -25,12 +23,13 @@ async function regButtonOnclick() {
     let email = (document.getElementById("email-input") as HTMLInputElement).value;
     let password = (document.getElementById("password-input") as HTMLInputElement).value;
     let confirmPassword = (document.getElementById("confirm-password-input") as HTMLInputElement).value;
-    let userRegModel: UserRegisterModel = {};
-    userRegModel!.fullName = fullName;
-    userRegModel!.birthDate = birthDate;
-    userRegModel!.email = email;
-    userRegModel!.password = password;
-    userRegModel!.confirmPassword = confirmPassword;
+    let userRegModel: UserRegisterModel = {
+        fullName: fullName,
+        birthDate: birthDate,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword
+    };
     const token = await registerUserQuery(userRegModel);
     const storage = new AuthData();
     storage.token = token;

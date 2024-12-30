@@ -1,7 +1,5 @@
 import { LoginApiResponse } from './api/interfaces';
 import { ProfileApiResponse } from './api/interfaces';
-import { PatientPagedListModel } from './api/interfaces';
-import {Patient} from './api/interfaces';
 
 class LocalDataStorage {
     public get data(): LoginApiResponse {
@@ -24,48 +22,6 @@ class LocalDataStorage {
 
     public set profile(value: ProfileApiResponse) {
         window.localStorage.setItem('profile', JSON.stringify(value));
-    }
-
-    public get patientPagedListModel(): PatientPagedListModel {
-        if (window.localStorage.getItem('patientPagedListModel') === null) {
-            return {} as PatientPagedListModel;
-        }
-        return JSON.parse(window.localStorage.getItem('patientPagedListModel')!);
-    }
-
-    public set patientPagedListModel(value: PatientPagedListModel) {
-        window.localStorage.setItem('patientPagedListModel', JSON.stringify(value));
-    }
-}
-
-class PaginationData {
-    //TODO
-}
-
-class PatientsData {
-    private localDataStorage: LocalDataStorage;
-
-    constructor() {
-        this.localDataStorage = new LocalDataStorage();
-    }
-
-    public get patients(): Patient[] {
-        if ( this.localDataStorage.patientPagedListModel.patients !== undefined ) {
-            return this.localDataStorage.patientPagedListModel.patients;
-        }
-        return [];
-    }
-
-    public set patients(value: Patient[]) {
-        this.localDataStorage.patientPagedListModel = { ...this.localDataStorage.patientPagedListModel, 'patients': value }
-    }
-
-    public getPatient(id: string): Patient {
-        const result = this.localDataStorage.patientPagedListModel.patients.find(x => x.id === id);
-        if ( result !== undefined ) {
-            return result;
-        }
-        return {} as Patient;
     }
 }
 
@@ -99,35 +55,36 @@ class ProfileData {
     }
 
     public get name(): string {
-        if (this.localDataStorage.profile.name !== undefined) {
-            return this.localDataStorage.profile.name;
+        if (this.localDataStorage.profile.fullName !== undefined) {
+            return this.localDataStorage.profile.fullName;
         }
         return "";
     }
     public set name(value: string) {
-        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'name': value }
+        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'fullName': value }
     }
 
     public get birthday(): string {
-        if (this.localDataStorage.profile.birthday !== undefined) {
-            return this.localDataStorage.profile.birthday;
+        if (this.localDataStorage.profile.birthDate !== undefined) {
+            return this.localDataStorage.profile.birthDate;
         }
         return "";
     }
     public set birthday(value: string) {
-        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'birthday': value }
+        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'birthDate': value }
     }
 
-    public get email(): string {
-        if (this.localDataStorage.profile.email !== undefined) {
-            return this.localDataStorage.profile.email;
-        }
-        return "";
-    }
-    public set email(value: string) {
-        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'email': value }
-    }
+//     public get email(): string {
+//         if (this.localDataStorage.profile.email !== undefined) {
+//             return this.localDataStorage.profile.email;
+//         }
+//         return "";
+//     }
+//     public set email(value: string) {
+//         this.localDataStorage.profile = { ...this.localDataStorage.profile, 'email': value }
+//     }
+
 }
 
-export { LocalDataStorage, AuthData, ProfileData, PatientsData };
+export { LocalDataStorage, AuthData, ProfileData };
 export type { LoginApiResponse, ProfileApiResponse };
