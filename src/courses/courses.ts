@@ -97,7 +97,6 @@ async function popupCreate(){
     const teacherInput = document.getElementById("teacher-name-input") as HTMLInputElement;
     // @ts-ignore
     teacherInput.onchange = () => {
-        console.log(teacherInput.value);
         let subUsers = [] as UserModel[];
         users.forEach((user) => {
             if (user.fullName.includes(<string>teacherInput?.value)) {
@@ -140,7 +139,6 @@ async function createNewCourse(groupId: string): Promise<void>{
     const mainTeacher = document.getElementById("teacher-select") as HTMLSelectElement;
     const reqContent: string = $('#requirements-div').summernote('code');
     const annoContent: string = $('#annotations-div').summernote('code');
-    console.log(mainTeacher?.dataset.info);
     const createModel = {
         name: courseName.value,
         startYear: parseInt(startYear.value),

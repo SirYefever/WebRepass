@@ -13,6 +13,9 @@ function footerConstructor() {
     const testBindButton = document.getElementById('test-bind-function')! as HTMLButtonElement;
     testBindButton.onclick = bind;
 
+    const loginAsTeacher = document.getElementById('login-as-teacher')! as HTMLButtonElement;
+    loginAsTeacher.onclick = loginTeacher;
+
     loadCSS("/src/footer/footer.css");
 }
 
@@ -86,6 +89,19 @@ function generateRandomString(): string {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
+}
+
+async function loginTeacher(){
+    let loginData: UserLoginModel = { email:"user@test.ru", password:"qwerty1"};
+    const token = await login(loginData);
+    const storage = new AuthData();
+    if (token !== null)
+    {
+        const userData = new ProfileData();
+        userData.email = "user@test.ru";
+        window.location.reload();
+    }
+    storage.token = token;
 }
 
 export {footerConstructor};
