@@ -11,45 +11,43 @@ import {
     MarkType,
     StudentDataModel,
     StudentStatuses,
-    UserRoles
 } from "../api/interfaces.ts";
 import {marked} from 'marked';
-import {getUserRoles} from "../utils/utils.ts";
 import {
     changeQueuedStudentStatusQuery,
     getCourseInfoQuery
 } from "./singleCourseQueries.ts";
 import {popupRedactSummary} from "./redactCourseInfo.ts";
 import {popupRedactStatus} from "./redactCourseStatus.ts";
-import {popupRedactMark} from "./redactMark.ts";
-import {getUserRolesFast} from "../queries/usersQueries.ts";
+import {initRedactMarkPopup, toggleRedactMarkPopupOn} from "./redactMark.ts";
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
+import {ProfileData} from "../LocalDataStorage.ts";
 
 export let mainTeacher: CourseTeacherModel;
 let courseData: CourseInfoModel;
-let userRoles: UserRoles;
+export let isUserAdminOrMainTeacher: boolean = false;
+
 
 async function singleCoursePageConstructor(){
     constructPage2(courseHtml, "/src/singleCourse/singleCourse.css");
     addHtmlToPage(redactPopup, "/src/singleCourse/popups/popup.css");
     addHtmlToPage(attestationHtml);
-    if ((await getUserRolesFast()).isAdmin){
-        addHtmlToPage(redactSummaryAdminHtml);
-    } else if (mainTeacher.email === (await getCurrentUserProfileInfoQuery()).email){
-        addHtmlToPage(redactSummaryTeacherHtml);
-    }
+    addHtmlToPage(redactSummaryAdminHtml);
+    addHtmlToPage(redactSummaryTeacherHtml);
+
+    initRedactMarkPopup();
 
     courseData = await getCourseInfoQuery() as CourseInfoModel;
-    userRoles = await getUserRoles() as UserRoles;
-
-    await constructAndFillSummary();
-
-    const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
     courseData.teachers.forEach(teacher => {
         if (teacher.isMain){
             mainTeacher = teacher;
         }
+    })
+    await defineIfUserAdminOrMainTeacher();
+    await constructAndFillSummary();
 
+    const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
+    courseData.teachers.forEach(teacher => {
         let listItem = document.createElement("li");
         listItem.setAttribute("id", "teacher-list-item");
 
@@ -70,6 +68,7 @@ async function singleCoursePageConstructor(){
 
         teachersList.append(listItem);
     })
+
     await constructStudentsUl(courseData);
 
     makeSubMainContainerVisible();
@@ -82,26 +81,79 @@ async function singleCoursePageConstructor(){
     });
 }
 
-async function constructAndFillSummary(){
+async function updatePageContent(){
+    const subMainContainer = document.getElementById("sub-main-container") as HTMLUListElement;
+    subMainContainer.innerHTML = courseHtml;
     courseData = await getCourseInfoQuery() as CourseInfoModel;
+
+    courseData = await getCourseInfoQuery() as CourseInfoModel;
+    courseData.teachers.forEach(teacher => {
+        if (teacher.isMain){
+            mainTeacher = teacher;
+        }
+    })
+    await defineIfUserAdminOrMainTeacher();
+    await constructAndFillSummary();
+
+    const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
+    courseData.teachers.forEach(teacher => {
+        let listItem = document.createElement("li");
+        listItem.setAttribute("id", "teacher-list-item");
+
+        const fullNamePar = document.createElement("p");
+        fullNamePar.textContent = teacher.name;
+        listItem.appendChild(fullNamePar);
+
+        const emailPar = document.createElement("p");
+        emailPar.textContent = teacher.email;
+        listItem.appendChild(emailPar);
+
+        if (teacher.isMain) {
+            const isMain = document.createElement("div");
+            isMain.classList.add("is-main-div");
+            isMain.textContent = "is main";
+            listItem.appendChild(isMain);
+        }
+
+        teachersList.append(listItem);
+    })
+
+    await constructStudentsUl(courseData);
+
+    makeSubMainContainerVisible();
+
+    $(document).ready(function() {
+        $('.summernote').summernote();
+    });
+    $('.summernote').summernote({
+        dialogsInBody: true
+    });
+}
+
+async function constructAndFillSummary() {
 
     const courseNamePar = document.getElementById("course-name") as HTMLParagraphElement;
     courseNamePar.textContent = courseData.name;
 
+    const nameAndRedactSummaryButtonDiv = document.getElementById("summary-and-redact-button") as HTMLDivElement;
 
     const statusDiv = document.querySelector(".status-par-and-button-div") as HTMLDivElement;
-    if (userRoles.isAdmin || userRoles.isTeacher){// Wrong??? One has to be a teacher for this specific course,
-        // not just for any course out there.
-        const summaryRedactButton = document.getElementById("redact-course-summary-button") as HTMLButtonElement;
-        summaryRedactButton.addEventListener("click", async () => {
-            await popupRedactSummary();
+    if (isUserAdminOrMainTeacher) {
+        const summaryRedactButton = document.createElement("button");
+        summaryRedactButton.textContent = "Redact course info";
+        summaryRedactButton.addEventListener("click", () => {
+            popupRedactSummary();
         });
+
+        nameAndRedactSummaryButtonDiv.appendChild(summaryRedactButton);
 
         const redactStatusButton = document.createElement("button");
         redactStatusButton.textContent = "Change status";
         redactStatusButton.addEventListener("click", () => {
             popupRedactStatus();
         })
+
+
         statusDiv.appendChild(redactStatusButton);
     }
 
@@ -129,33 +181,29 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
         courseDataInput = await getCourseInfoQuery() as CourseInfoModel;
     }
 
-
     const studentsList = document.getElementById("students-list") as HTMLUListElement;
     studentsList.innerHTML = "";
     let studentsEnrolled = 0;
     let studentsInQueue = 0;
-    courseDataInput.students.forEach(student => {
+    courseDataInput.students.forEach(async(student) =>  {
         if (student.status === StudentStatuses[StudentStatuses.Accepted]) {
             studentsEnrolled++;
         } else if (student.status === StudentStatuses[StudentStatuses.InQueue]){
             studentsInQueue++;
         }
         let listItem = document.createElement("li");
-        listItem.appendChild(createAndFillUserTemplate(student));
-        // listItem.innerHTML = createAndFillUserTemplate(student);
+        listItem.appendChild(await createAndFillUserTemplate(student));
         studentsList.appendChild(listItem);
     })
 
-    const pendingPar = document.getElementById("students-pending-par");
-    const enrolledPar = document.getElementById("students-enrolled-par");
+    const pendingPar = document.getElementById("students-pending-par") as HTMLParagraphElement;
+    const enrolledPar = document.getElementById("students-enrolled-par") as HTMLParagraphElement;
 
-    // @ts-ignore
     enrolledPar.textContent += studentsEnrolled.toString();
-    // @ts-ignore
     pendingPar.textContent += studentsInQueue.toString();
 }
 
-function createAndFillUserTemplate(studentData: StudentDataModel){
+async function createAndFillUserTemplate(studentData: StudentDataModel){
     const namePar = document.createElement("p");
     namePar.textContent = studentData.name;
     namePar.classList.add("student-name-par")
@@ -183,14 +231,17 @@ function createAndFillUserTemplate(studentData: StudentDataModel){
     dataStudentDiv.appendChild(statusPar);
     dataStudentDiv.appendChild(emailPar);
     studentDiv.appendChild(dataStudentDiv);
-    const studentStatusDiv = manageStudentStatus(studentData);
+    const studentStatusDiv = await manageStudentStatus(studentData);
     if (studentStatusDiv) {
-        studentDiv.appendChild(<HTMLDivElement>manageStudentStatus(studentData));
+        studentDiv.appendChild(studentStatusDiv);
     }
     return studentDiv;
 }
 
-function manageStudentStatus(studentData: StudentDataModel): HTMLDivElement | undefined  {
+async function manageStudentStatus(studentData: StudentDataModel): Promise<HTMLDivElement | undefined>  {
+    if (!isUserAdminOrMainTeacher) {
+        return;
+    }
     if (studentData.status === StudentStatuses[StudentStatuses.InQueue]){
         const queuedStudentDiv = document.createElement("div");
         queuedStudentDiv.id = `queued-student-${studentData.id}`;
@@ -218,7 +269,7 @@ function manageStudentStatus(studentData: StudentDataModel): HTMLDivElement | un
         let intermediateAttestation = document.createElement("button");
         intermediateAttestation.textContent = "Intermediate attestation - ";
         intermediateAttestation.id = `button-${studentData.id}`;
-        intermediateAttestation?.addEventListener("click", () => popupRedactMark(MarkType.Midterm, studentData));
+        intermediateAttestation?.addEventListener("click", () => toggleRedactMarkPopupOn(MarkType.Midterm, studentData));//TODO: change the function
 
         intermediateAttestationDiv.appendChild(intermediateAttestation);
         // @ts-ignore
@@ -229,7 +280,7 @@ function manageStudentStatus(studentData: StudentDataModel): HTMLDivElement | un
         const finalAttestationDiv = document.createElement("div");
         const finalAttestation = document.createElement("button");
         finalAttestation.textContent = "Final attestation - ";
-        finalAttestation.onclick = () => popupRedactMark(MarkType.Final, studentData);
+        finalAttestation.onclick = () => toggleRedactMarkPopupOn(MarkType.Final, studentData);
         finalAttestationDiv.appendChild(finalAttestation);
         // @ts-ignore
         finalAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.finalResult]));
@@ -281,6 +332,10 @@ function getSemesterFromCheckboxes(){
 
 
 
+async function defineIfUserAdminOrMainTeacher(): Promise<void> {
+    const userInfo = new ProfileData();
+    isUserAdminOrMainTeacher = (userInfo.userRoles.isAdmin || mainTeacher.email === (await getCurrentUserProfileInfoQuery()).email);
+}
 
 
-export { constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};
+export { updatePageContent, defineIfUserAdminOrMainTeacher, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};

@@ -15,13 +15,16 @@ async function groupsPageConstructor(){
     const curUserRoles = await getUserRoles() as UserRoles;
 
     if (curUserRoles.isAdmin){
+        initPopupCreate();
+        initPopupRedact();
+        initPopupDelete();
         const createNewButton = document.createElement("button");
-        createNewButton?.addEventListener("click", popupCreate);
+        createNewButton?.addEventListener("click", toggleCreatePopup);
         createNewButton.textContent = "Add Group";
         const createNewDiv = document.querySelector("#create-new-div");
         createNewDiv?.appendChild(createNewButton);
     }
-    displayGroupList();
+    await displayGroupList();
     makeSubMainContainerVisible();
 }
 
@@ -42,12 +45,12 @@ async function displayGroupList(){
         if (curUserRoles.isAdmin)
         {
             const redactButton = document.createElement("button");
-            redactButton.addEventListener("click", () => popupRedact(group.id));
+            redactButton.addEventListener("click", () => toggleRedactPopupOn(group.id));
             redactButton.textContent = "Redact";
             linkDiv.appendChild(redactButton);
 
             const deleteButton = document.createElement("button");
-            deleteButton.addEventListener("click", ()=> popupDelete(group.id));
+            deleteButton.addEventListener("click", ()=> toggleDeletePopupOn(group.id));
             deleteButton.textContent = "Delete";
             linkDiv.appendChild(deleteButton);
         }
@@ -71,13 +74,16 @@ async function getGroups() {
 
 
 
-
-function popupCreate(){
-    toggleCreatePopup();
+function initPopupCreate() {
     var saveButton = document.getElementById("confirm-create-button");
     saveButton?.addEventListener("click", () => createNewGroup())
     var cancelButton = document.getElementById("cancel-create-button");
     cancelButton?.addEventListener("click", cancelGroupCreation)
+}
+
+function clearCreatePopupForm(){
+    const groupName = document.getElementById("new-group-name") as HTMLInputElement;
+    groupName.value = "";
 }
 
 function toggleCreatePopup(){
@@ -100,8 +106,9 @@ async function createNewGroup(): Promise<void>{
     })
     if (response.ok) {
         toggleSuccessPopup();
-        displayGroupList();
+        await displayGroupList();
         toggleCreatePopup();
+        clearCreatePopupForm();
     }
     else {
         toggleFailurePopup();
@@ -117,18 +124,24 @@ function cancelGroupCreation(){
 
 
 
-
-function popupRedact(groupId: string) {
-    toggleRedactPopup();
-    var saveButton = document.getElementById("save-button");
-    saveButton?.addEventListener("click", () => saveGroupChanges(groupId))
+function initPopupRedact(){
     var cancelButton = document.getElementById("cancel-button");
     cancelButton?.addEventListener("click", cancelGroupChanges)
 }
 
-function toggleRedactPopup(){
-    var popup = document.getElementById("redact-popup-span");
-    popup?.classList.toggle("show");
+function toggleRedactPopupOn(groupId: string){
+    const popup = document.getElementById("redact-popup-span");
+    popup?.classList.add("show");
+
+    const saveButton = document.getElementById("save-button") as HTMLButtonElement;
+    const newSaveButton = saveButton.cloneNode(true) as HTMLButtonElement;
+    newSaveButton.addEventListener("click", () => saveGroupChanges(groupId))
+    saveButton?.parentNode?.replaceChild(newSaveButton, saveButton);
+}
+
+function toggleRedactPopupOff(){
+    const popup = document.getElementById("redact-popup-span");
+    popup?.classList.remove("show");
 }
 
 async function saveGroupChanges(id: string): Promise<void> {
@@ -146,7 +159,7 @@ async function saveGroupChanges(id: string): Promise<void> {
     if (response.ok) {
         const groupLink = document.getElementById("groupId=" + id) as HTMLAnchorElement;
         groupLink.textContent = newNameInput.value;
-        toggleRedactPopup();
+        toggleRedactPopupOff();
         toggleSuccessPopup();
     }
     else {
@@ -158,23 +171,29 @@ async function saveGroupChanges(id: string): Promise<void> {
 function cancelGroupChanges(){
     const newNameInput = document.getElementById("new-name") as HTMLInputElement;
     newNameInput.value = "";
-    toggleRedactPopup();
+    toggleRedactPopupOff();
 }
 
 
 
-
-function popupDelete(groupId: string){
-    toggleDeletePopup();
-    var confirmButton = document.getElementById("confirm-delete-button");
-    confirmButton?.addEventListener("click", () => deleteGroup(groupId))
-    var cancelButton = document.getElementById("cancel-delete-button");
-    cancelButton?.addEventListener("click", toggleDeletePopup);
+function initPopupDelete(){
+    const cancelButton = document.getElementById("cancel-delete-button");
+    cancelButton?.addEventListener("click", toggleDeletePopupOff);
 }
 
-function toggleDeletePopup(){
+function toggleDeletePopupOn(groupId: string){
+    const popup = document.getElementById("delete-popup-span");
+    popup?.classList.add("show");
+
+    const confirmButton = document.getElementById("confirm-delete-button") as HTMLButtonElement;
+    const newConfirmButton = confirmButton.cloneNode(true) as HTMLButtonElement;
+    newConfirmButton.addEventListener("click", () => deleteGroup(groupId))
+    confirmButton.parentNode?.replaceChild(newConfirmButton, confirmButton);
+}
+
+function toggleDeletePopupOff() {
     var popup = document.getElementById("delete-popup-span");
-    popup?.classList.toggle("show");
+    popup?.classList.remove("show");
 }
 
 async function deleteGroup(id: string): Promise<void> {
@@ -186,8 +205,8 @@ async function deleteGroup(id: string): Promise<void> {
         }
     })
     if (response.ok) {
-        toggleDeletePopup();
-        displayGroupList();
+        toggleDeletePopupOff();
+        await displayGroupList();
         toggleSuccessPopup();
     }
     else {

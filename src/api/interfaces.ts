@@ -5,6 +5,7 @@ interface LoginApiResponse {
 interface ProfileApiInterface {
     fullName: string;
     birthDate: string;
+    email: string
 }
 
 interface UserRegisterModel {

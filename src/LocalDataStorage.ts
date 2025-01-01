@@ -1,4 +1,4 @@
-import { LoginApiResponse } from './api/interfaces';
+import {LoginApiResponse, UserRoles} from './api/interfaces';
 import { ProfileApiResponse } from './api/interfaces';
 
 class LocalDataStorage {
@@ -22,6 +22,17 @@ class LocalDataStorage {
 
     public set profile(value: ProfileApiResponse) {
         window.localStorage.setItem('profile', JSON.stringify(value));
+    }
+
+    public get userRoles(): UserRoles {
+        if (window.localStorage.getItem('userRoles') === null) {
+            return {} as UserRoles;
+        }
+        return (JSON.parse(window.localStorage.getItem('userRoles')!)) as UserRoles;
+    }
+
+    public set userRoles(value: UserRoles) {
+        window.localStorage.setItem('userRoles', JSON.stringify(value));
     }
 }
 
@@ -74,15 +85,27 @@ class ProfileData {
         this.localDataStorage.profile = { ...this.localDataStorage.profile, 'birthDate': value }
     }
 
-//     public get email(): string {
-//         if (this.localDataStorage.profile.email !== undefined) {
-//             return this.localDataStorage.profile.email;
-//         }
-//         return "";
-//     }
-//     public set email(value: string) {
-//         this.localDataStorage.profile = { ...this.localDataStorage.profile, 'email': value }
-//     }
+    public get email(): string {
+        if (this.localDataStorage.profile.email !== undefined) {
+            return this.localDataStorage.profile.email;
+        }
+        return "";
+    }
+    public set email(value: string) {
+        this.localDataStorage.profile = { ...this.localDataStorage.profile, 'email': value }
+    }
+
+    public get userRoles(): UserRoles {
+        if (this.localDataStorage.userRoles !== undefined) {
+            return this.localDataStorage.userRoles;
+        }
+
+        return {isStudent: false, isTeacher: false, isAdmin: false};
+    }
+
+    public set userRoles(value: UserRoles) {
+        this.localDataStorage.userRoles = value;
+    }
 
 }
 

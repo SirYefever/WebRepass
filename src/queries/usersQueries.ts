@@ -1,5 +1,5 @@
 import {UserModel, UserRoles} from "../api/interfaces.ts";
-import {AuthData} from "../LocalDataStorage.ts";
+import {AuthData, ProfileData} from "../LocalDataStorage.ts";
 
 export let userRoles: UserRoles;
 
@@ -17,11 +17,8 @@ async function fetchUsers():Promise<UserModel[] | undefined>{
         }
 }
 
-async function getUserRolesFast(): Promise<UserRoles>{
-        if (userRoles !== undefined){
-                return userRoles;
-        }
-
+async function setUserRoles(): Promise<UserRoles>{
+        const profileData = new ProfileData();
         const authData = new AuthData();
         const response = await fetch("https://camp-courses.api.kreosoft.space/roles", {
                 method: "GET",
@@ -30,9 +27,9 @@ async function getUserRolesFast(): Promise<UserRoles>{
                 }
         })
         if (response.ok) {
-                return (await response.json());
+                profileData.userRoles = await response.json();
         }
         throw response;
 }
 
-export {fetchUsers, getUserRolesFast}
+export {fetchUsers, setUserRoles}

@@ -97,12 +97,12 @@ function constructPage2(innerHTML: string, cssFile: string) {
 }
 
 function makeSubMainContainerInvisible(){
-    const subMainContainer = document.getElementById("sub-main-container");
+    const subMainContainer = document.getElementById("sub-main-container") as HTMLDivElement;
     subMainContainer.style.visibility = "hidden";
 }
 
 function makeSubMainContainerVisible(){
-    const subMainContainer = document.getElementById("sub-main-container");
+    const subMainContainer = document.getElementById("sub-main-container") as HTMLDivElement;
     subMainContainer.style.visibility = "visible";
 }
 

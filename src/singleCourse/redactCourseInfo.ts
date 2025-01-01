@@ -1,21 +1,29 @@
 import {
+        CourseInfoModel,
         EditCampusCourseModel,
         EditCampusCourseRequirementsAndAnnotationsModel,
         UserInfoModel,
         UserModel,
 } from "../api/interfaces.ts";
-import {changeCourseSummaryAdminQuery, changeCourseSummaryTeacherQuery} from "./singleCourseQueries.ts";
+import {
+        changeCourseSummaryAdminQuery,
+        changeCourseSummaryTeacherQuery,
+        getCourseInfoQuery
+} from "./singleCourseQueries.ts";
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
 import {
         constructAndFillSummary,
-        getSemesterFromCheckboxes, mainTeacher,
+        getSemesterFromCheckboxes, mainTeacher, updatePageContent,
 } from "./singleCourse.ts";
 // import {get} from "jquery";
-import {fetchUsers, getUserRolesFast} from "../queries/usersQueries.ts";
+import {fetchUsers, setUserRoles} from "../queries/usersQueries.ts";
 import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
+import {ProfileData} from "../LocalDataStorage.ts";
+import {isNullOrEmpty} from "../utils/utils.ts";
 
-async function clearSummaryPopupContents(){
-        if ((await getUserRolesFast()).isAdmin) {
+function clearSummaryPopupContents(){
+        const userInfo = new ProfileData;
+        if (userInfo.userRoles.isAdmin) {
                 clearAdminSummaryPopup();
         } else {
                 clearMainTeacherSummaryPopup();
@@ -48,7 +56,8 @@ function clearMainTeacherSummaryPopup() {
         $('#annotations-div-teacher').summernote('code', '');
 }
 
-function collectDataOverRedactSummaryFormForAdmin(): EditCampusCourseModel{
+async function collectDataOverRedactSummaryFormForAdmin(): Promise<EditCampusCourseModel> {
+        const courseData = await getCourseInfoQuery() as CourseInfoModel;
         const redactSummaryDiv = document.getElementById("redact-summary-admin-div") as HTMLInputElement;
         const courseNameInput = redactSummaryDiv.querySelector("#new-course-name") as HTMLInputElement;
         const startYearInput = redactSummaryDiv.querySelector("#new-course-start-year") as HTMLInputElement;
@@ -58,57 +67,58 @@ function collectDataOverRedactSummaryFormForAdmin(): EditCampusCourseModel{
         const mainTeacherSelect = redactSummaryDiv.querySelector("#teacher-select") as HTMLSelectElement;
 
 
-        const editSummaryModel = {
-                name: courseNameInput.value,
-                startYear: parseInt(startYearInput.value),
-                maximumStudentsCount: parseInt(maximumStudentCountInput.value),
-                semester: getSemesterFromCheckboxes(),
-                requirements: reqContent,
-                annotations: annoContent,
+        return {
+                name: (isNullOrEmpty(courseNameInput.value) ? courseData.name : courseNameInput.value),
+                startYear: isNullOrEmpty(startYearInput.value) ? courseData.startYear : parseInt(startYearInput.value),
+                maximumStudentsCount: isNullOrEmpty(maximumStudentCountInput.value) ? courseData.maximumStudentsCount : parseInt(maximumStudentCountInput.value),
+                semester: (getSemesterFromCheckboxes() === null) ? courseData.semester : getSemesterFromCheckboxes(),
+                requirements: isNullOrEmpty(reqContent) ? courseData.requirements : reqContent,
+                annotations: isNullOrEmpty(annoContent) ? courseData.annotations : annoContent,
                 mainTeacherId: mainTeacherSelect?.selectedOptions[0].dataset.info
-        } as EditCampusCourseModel
-
-        return editSummaryModel;
+        } as EditCampusCourseModel;
 }
 
 function collectDataOverRedactSummaryFormForMainTeacher(): EditCampusCourseRequirementsAndAnnotationsModel{
         const reqContent: string = $('#requirements-div-teacher').summernote('code');
         const annoContent: string = $('#annotations-div-teacher').summernote('code');
 
-        const editSummaryModel = {
+
+        return {
                 requirements: reqContent,
                 annotations: annoContent
         } as EditCampusCourseRequirementsAndAnnotationsModel;
-
-        return editSummaryModel;
 }
 
 async function popupRedactSummary(){
-        const userRoles = await getUserRolesFast();
+        const userRoles = new ProfileData().userRoles;
+
         toggleRedactSummaryPopup();
-        await clearSummaryPopupContents();
+        // clearSummaryPopupContents();
         if (userRoles.isAdmin){
                 await popupAdminRedactSummary();
         } else {
-                const curUserEmail = ((await (await getCurrentUserProfileInfoQuery()).json()) as UserInfoModel).email;
-                if (curUserEmail !== mainTeacher.email){
-                        return;
-                }
-                const saveButton = document.getElementById("confirm-redact-summary-teacher-button");
-                saveButton?.addEventListener("click", async () => {
-                        const response = await changeCourseSummaryTeacherQuery(collectDataOverRedactSummaryFormForMainTeacher());
-                        if (response.ok) {
-                                toggleSuccessPopup();
-                                toggleRedactSummaryPopup();
-                                await constructAndFillSummary();
-                                clearSummaryPopupContents();
-                        } else {
-                                toggleFailurePopup();
-                        }
-                })
-                const cancelButton = document.getElementById("cancel-redact-summary-teacher-button");
-                cancelButton?.addEventListener("click", async () => { await popupRedactSummary(); })
+                await popupTeacherRedactSummary();
         }
+}
+
+async function popupTeacherRedactSummary(){
+        const curUserEmail = ((await getCurrentUserProfileInfoQuery()) as UserInfoModel).email;
+        if (curUserEmail !== mainTeacher.email){
+                return;
+        }
+        const saveButton = document.getElementById("confirm-redact-summary-teacher-button");
+        saveButton?.addEventListener("click", async () => {
+                const response = await changeCourseSummaryTeacherQuery(collectDataOverRedactSummaryFormForMainTeacher());
+                if (response.ok) {
+                        toggleSuccessPopup();
+                        toggleRedactSummaryPopup();
+                        await updatePageContent();
+                } else {
+                        toggleFailurePopup();
+                }
+        })
+        const cancelButton = document.getElementById("cancel-redact-summary-teacher-button");
+        cancelButton?.addEventListener("click", async () => { await popupRedactSummary(); })
 }
 
 async function popupAdminRedactSummary(){
@@ -130,13 +140,12 @@ async function popupAdminRedactSummary(){
 
         const saveButton = document.getElementById("confirm-redact-summary-admin-button");
         saveButton?.addEventListener("click", async () => {
-                const editSummaryModel = collectDataOverRedactSummaryFormForAdmin();
+                const editSummaryModel = await collectDataOverRedactSummaryFormForAdmin();
                 const response = await changeCourseSummaryAdminQuery(editSummaryModel);
                 if (response.ok) {
                         toggleSuccessPopup();
                         toggleRedactSummaryPopup();
-                        await constructAndFillSummary();
-                        clearSummaryPopupContents();
+                        await updatePageContent();
                 } else{
                         toggleFailurePopup();
                 }
@@ -166,8 +175,9 @@ function fillTeacherSelectWithUsers(users: UserModel[]) {
 }
 
 
-async function toggleRedactSummaryPopup(){
-        if ((await getUserRolesFast()).isAdmin){
+function toggleRedactSummaryPopup(){
+        const userInfo = new ProfileData;
+        if (userInfo.userRoles.isAdmin){
                 var popup = document.getElementById("redact-summary-admin-span");
                 popup?.classList.toggle("show");
         } else {

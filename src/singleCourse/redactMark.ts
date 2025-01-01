@@ -3,40 +3,53 @@ import {changeAttestationMarkQuery} from "./singleCourseQueries.ts";
 import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
 import {constructStudentsUl} from "./singleCourse.ts";
 
-function popupRedactMark(markType: MarkType, studentData: StudentDataModel){
-      toggleRedactMarkPopup();
 
-      var saveButton = document.getElementById("confirm-redact-mark-button") as HTMLButtonElement;
-      saveButton?.addEventListener("click", () => changeAttestationMark(studentData.id, markType))
-      saveButton.disabled = true;
+function initRedactMarkPopup(){
       var cancelButton = document.getElementById("cancel-redact-mark-button");
-      cancelButton?.addEventListener("click", toggleRedactMarkPopup)
+      cancelButton?.addEventListener("click", toggleRedactMarkPopupOff)
+}
+
+function toggleRedactMarkPopupOn(markType: MarkType, studentData: StudentDataModel) {
+      const popup = document.getElementById("redact-mark-span");
+      popup?.classList.add("show");
+
+      const saveButton = document.getElementById("confirm-redact-mark-button") as HTMLButtonElement;
+      const newSaveButton = saveButton.cloneNode(true) as HTMLButtonElement;
+      newSaveButton.addEventListener("click", () => changeAttestationMark(studentData.id, markType));
+      saveButton.parentNode?.replaceChild(newSaveButton, saveButton);
+      newSaveButton.disabled = true;
 
       const successCheckbox = document.getElementById("success-checkbox") as HTMLInputElement;
+      successCheckbox.checked = false;
 
       const failCheckbox = document.getElementById("fail-checkbox") as HTMLInputElement;
+      failCheckbox.checked = false;
 
       successCheckbox.onclick = () => {
-            successCheckbox.checked = false;
             failCheckbox.checked = false;
 
             successCheckbox.checked = true;
-            saveButton.disabled = false;
+            newSaveButton.disabled = false;
       }
       failCheckbox.onclick = () => {
             successCheckbox.checked = false;
-            failCheckbox.checked = false;
 
             failCheckbox.checked = true;
-            saveButton.disabled = false;
+            newSaveButton.disabled = false;
       }
 }
 
-function toggleRedactMarkPopup(){
+function toggleRedactMarkPopupOff(){
       var popup = document.getElementById("redact-mark-span");
-      popup?.classList.toggle("show");
-}
+      popup?.classList.remove("show");
 
+
+      const successCheckbox = document.getElementById("success-checkbox") as HTMLInputElement;
+      successCheckbox.checked = false;
+
+      const failCheckbox = document.getElementById("fail-checkbox") as HTMLInputElement;
+      failCheckbox.checked = false;
+}
 
 async function changeAttestationMark(studentId: string, markType: MarkType): Promise<void>{
 
@@ -50,7 +63,7 @@ async function changeAttestationMark(studentId: string, markType: MarkType): Pro
 
       const response = await changeAttestationMarkQuery(studentId, requestBody);
       if (response.ok) {
-            toggleRedactMarkPopup();
+            toggleRedactMarkPopupOff();
             toggleSuccessPopup();
             await constructStudentsUl();
       }
@@ -59,4 +72,4 @@ async function changeAttestationMark(studentId: string, markType: MarkType): Pro
       }
 }
 
-export {popupRedactMark}
+export { toggleRedactMarkPopupOn, toggleRedactMarkPopupOff, initRedactMarkPopup }

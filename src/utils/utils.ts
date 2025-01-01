@@ -47,5 +47,8 @@ async function getUserRoles(): Promise<UserRoles>{
     throw response;
 }
 
+function isNullOrEmpty(str: string | null | undefined): boolean {
+    return str === null || str === undefined || str.trim().length === 0;
+}
 
-export {getUserRoles, getPrefixUntilChar, popup }
+export { isNullOrEmpty, getUserRoles, getPrefixUntilChar, popup }

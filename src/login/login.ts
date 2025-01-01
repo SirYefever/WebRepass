@@ -3,6 +3,7 @@ import {constructPage2, makeSubMainContainerVisible} from '../index/index'
 import { AuthData, ProfileData } from "../LocalDataStorage.ts";
 import { UserLoginModel } from '../api/interfaces.ts';
 import {footerConstructor} from "../footer/footer.ts";
+import {setUserRoles} from "../queries/usersQueries.ts";
 
 
 async function login(requestBody: object) {
@@ -32,6 +33,7 @@ async function loginLogic() {
         window.location.reload();
     }
     storage.token = token;
+    await setUserRoles();
 }
 
 

@@ -4,7 +4,7 @@ import {UserInfoModel} from "../api/interfaces.ts";
 async function getCurrentUserProfileInfoQuery(): Promise<UserInfoModel>{
     const authData = new AuthData();
     const response = await fetch("https://camp-courses.api.kreosoft.space/profile", {
-        method: "POST",
+        method: "GET",
         headers: {
             Authorization: "Bearer " + authData.token
         }

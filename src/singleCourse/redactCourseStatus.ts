@@ -4,7 +4,7 @@ import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPo
 
 
 function popupRedactStatus(){
-      togglePopup("redact-status-span")
+      togglePopup();
 
       var saveButton = document.getElementById("confirm-redact-status-button") as HTMLButtonElement;
       saveButton?.addEventListener("click", () => changeCourseStatus())
@@ -44,28 +44,27 @@ function popupRedactStatus(){
       }
 }
 
-function togglePopup(popupSpanId: string){
-      var popup = document.getElementById(popupSpanId);
+function togglePopup(){
+      var popup = document.getElementById("redact-status-span");
       popup?.classList.toggle("show");
 }
 
 async function changeCourseStatus(): Promise<void>{
-
       const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
       const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
-      // const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
+      const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
 
       let requestBody = {} as EditCourseStatusModel;
       openedCheckbox.checked ? requestBody = {status: CourseStatuses.OpenForAssigning} :
           startedCheckbox.checked ? requestBody = {status: CourseStatuses.Started} :
-              requestBody = {status: CourseStatuses.Finished}
+              finishedCheckbox.checked ? requestBody = {status: CourseStatuses.Finished} :
+                  {};
 
       const response = await changeCourseStatusQuery(requestBody);
       if (response.ok) {
-            togglePopup("redact-status-span");
+            togglePopup();
             toggleSuccessPopup();
-            const statusPar = document.getElementById("status-par");
-            // @ts-ignore
+            const statusPar = document.getElementById("status-par") as HTMLParagraphElement;
             statusPar.textContent = "Status:" + CourseStatuses[requestBody.status];
       }
       else {

@@ -2,6 +2,7 @@ import {UserLoginModel, UserRegisterModel} from "../api/interfaces.ts";
 import {AuthData, ProfileData} from "../LocalDataStorage.ts";
 import {login} from "../login/login.ts";
 import {loadCSS} from "../index";
+import {setUserRoles} from "../queries/usersQueries.ts";
 
 function footerConstructor() {
     const loginAdminButton = document.getElementById('login-as-admin')! as HTMLButtonElement;
@@ -25,24 +26,26 @@ async function loginAdmin(){
     const storage = new AuthData();
     if (token !== null)
     {
-        const userData = new ProfileData();
+        let userData = new ProfileData();
         userData.email = "gymboss@gachi.com";
         window.location.reload();
     }
     storage.token = token;
+    await setUserRoles();
 }
 
 async function loginStudent(){
-    let loginData: UserLoginModel = { email:"user@test.ru", password:"qwerty1"};
+    let loginData: UserLoginModel = { email:"user@test.com", password:"qwerty1"};
     const token = await login(loginData);
     const storage = new AuthData();
     if (token !== null)
     {
         const userData = new ProfileData();
-        userData.email = "user@test.ru";
+        userData.email = "user@test.com";
         window.location.reload();
     }
     storage.token = token;
+    await setUserRoles();
 }
 
 
@@ -68,8 +71,9 @@ async function registerUserQuery() {
 }
 
 async function signUpForCourse(token: string){
-    const courseId = "34008266-112d-4046-1e84-08dd281e240c";
-    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/sign-up", {
+    const courseId = "1eedf773-3aad-4c02-05aa-08dd2a3ac0a9";
+    const requestUrl ="https://camp-courses.api.kreosoft.space/courses/" + courseId + "/sign-up" ;
+    const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -102,6 +106,7 @@ async function loginTeacher(){
         window.location.reload();
     }
     storage.token = token;
+    await setUserRoles();
 }
 
 export {footerConstructor};

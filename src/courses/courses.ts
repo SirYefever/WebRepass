@@ -8,6 +8,7 @@ import {AuthData} from "../LocalDataStorage.ts";
 async function coursesPageConstructor(){
     constructPage2(coursesHtml, "/src/courses/courses.css");
     addHtmlToPage(createPopupHtml, "/src/courses/popups/popup.css");
+    initPopupCreate();
     const curUserRoles = await getUserRoles() as UserRoles;
 
     if (curUserRoles.isAdmin){
@@ -78,9 +79,7 @@ function displayCourses(courses: CampusCourseModel[]) {
 }
 
 
-async function popupCreate(){
-    toggleCreatePopup();
-    const users = await fetchUsers() as UserModel[];
+function initPopupCreate(){
     const urlSplit = window.location.pathname.split("/");
     const groupId = urlSplit[urlSplit.length - 1];
 
@@ -93,6 +92,11 @@ async function popupCreate(){
     springCheckbox?.addEventListener("change", manageCheckingSpring)
     const autumnCheckbox = document.getElementById("autumn");
     autumnCheckbox?.addEventListener("change", manageCheckingAutumn)
+}
+
+async function popupCreate(){
+    toggleCreatePopup();
+    const users = await fetchUsers() as UserModel[];
 
     const teacherInput = document.getElementById("teacher-name-input") as HTMLInputElement;
     // @ts-ignore
@@ -193,8 +197,6 @@ function getSemesterFromCheckboxes(){
 }
 
 function cancelCourseCreation(){
-    const newNameInput = document.getElementById("confirm-create-button") as HTMLInputElement;
-    newNameInput.value = "";
     toggleCreatePopup();
 }
 
