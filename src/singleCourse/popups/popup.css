@@ -135,3 +135,26 @@
     width: fit-content;
     max-width: 20%;
 }
+
+#new-teacher-div{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: fit-content;
+
+}
+
+#add-new-teacher-span{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: fit-content;
+
+}
+
+#new-teacher-select{
+    width: fit-content;
+    max-width: 20%;
+}

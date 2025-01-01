@@ -118,3 +118,7 @@
 .student-declined{
     color: darkred;
 }
+
+#invisible{
+    visibility: hidden;
+}

@@ -1,5 +1,5 @@
 import {AuthData} from "../LocalDataStorage.ts";
-import {UserRoles} from "../api/interfaces.ts";
+import {UserModel, UserRoles} from "../api/interfaces.ts";
 
 function getPrefixUntilChar(str: string, char: string): string {
     const index = str.indexOf(char);
@@ -51,4 +51,21 @@ function isNullOrEmpty(str: string | null | undefined): boolean {
     return str === null || str === undefined || str.trim().length === 0;
 }
 
-export { isNullOrEmpty, getUserRoles, getPrefixUntilChar, popup }
+function compareUsersAlphabetically(firstUser: UserModel, secondUser: UserModel){
+    return firstUser.fullName.localeCompare(secondUser.fullName);
+}
+
+function fillTeacherSelectWithUsers(users: UserModel[], teacherSelectId: string) {
+    let newTeacherSelect = document.getElementById(teacherSelectId) as HTMLSelectElement;
+    newTeacherSelect.innerHTML = "";
+    users.sort(compareUsersAlphabetically);
+    users.forEach(user => {
+        const newOption = document.createElement("option");
+        newOption.textContent = user.fullName;
+        newOption.dataset.info = user.id;
+        newOption.classList.add("teacher-option");
+        newTeacherSelect?.appendChild(newOption);
+    })
+}
+
+export { fillTeacherSelectWithUsers, compareUsersAlphabetically, isNullOrEmpty, getUserRoles, getPrefixUntilChar, popup }

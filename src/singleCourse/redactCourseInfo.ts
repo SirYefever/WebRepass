@@ -18,7 +18,7 @@ import {
 import {fetchUsers} from "../queries/usersQueries.ts";
 import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
 import {ProfileData} from "../LocalDataStorage.ts";
-import {isNullOrEmpty} from "../utils/utils.ts";
+import {fillTeacherSelectWithUsers, isNullOrEmpty} from "../utils/utils.ts";
 
 function clearSummaryPopupContents(){
         const userInfo = new ProfileData;
@@ -146,7 +146,7 @@ function initRedactSummaryAdmin(){
 async function popupAdminRedactSummary(){
         const users = await fetchUsers() as UserModel[];
         const redactSummaryDiv = document.getElementById("redact-summary-admin-div") as HTMLInputElement;
-        fillTeacherSelectWithUsers(users);
+        fillTeacherSelectWithUsers(users, "teacher-select");
 
         const teacherNameInput = redactSummaryDiv.querySelector("#teacher-name-input") as HTMLInputElement;
         teacherNameInput.onchange = () => {
@@ -156,30 +156,9 @@ async function popupAdminRedactSummary(){
                                 subUsers.push(user);
                         }
                 })
-                fillTeacherSelectWithUsers(subUsers);
+                fillTeacherSelectWithUsers(subUsers, "teacher-select");
         }
 }
-
-
-
-function compareUsersAlphabetically(firstUser: UserModel, secondUser: UserModel){
-        return firstUser.fullName.localeCompare(secondUser.fullName);
-}
-
-function fillTeacherSelectWithUsers(users: UserModel[]) {
-        let teacherSelect = document.getElementById("teacher-select");
-        // @ts-ignore
-        teacherSelect.innerHTML = "";
-        users.sort(compareUsersAlphabetically);
-        users.forEach(user => {
-                const newOption = document.createElement("option");
-                newOption.textContent = user.fullName;
-                newOption.dataset.info = user.id;
-                newOption.classList.add("teacher-option");
-                teacherSelect?.appendChild(newOption);
-        })
-}
-
 
 function toggleRedactSummaryPopup(){
         const userInfo = new ProfileData;

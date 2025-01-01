@@ -3,6 +3,7 @@ import redactPopup from './popups/redactStatusPopup.html?raw'
 import attestationHtml from './popups/attestation.html?raw'
 import redactSummaryTeacherHtml from './popups/redactSummaryTeacher.html?raw'
 import redactSummaryAdminHtml from './popups/redactSumarryAdmin.html?raw'
+import newTeacherHtml from './popups/newTeacherPopup.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {
     CourseInfoModel,
@@ -22,10 +23,11 @@ import {
     initRedactSummaryTeacher,
     popupRedactSummary,
 } from "./redactCourseInfo.ts";
-import {popupRedactStatus} from "./redactCourseStatus.ts";
+import {initPopupRedactStatus, popupRedactStatus} from "./redactCourseStatus.ts";
 import {initRedactMarkPopup, toggleRedactMarkPopupOn} from "./redactMark.ts";
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
 import {ProfileData} from "../LocalDataStorage.ts";
+import {initNewTacherPopup, newTeacherPopupOn} from "./newTeacher.ts";
 
 export let mainTeacher: CourseTeacherModel;
 let courseData: CourseInfoModel;
@@ -38,10 +40,13 @@ async function singleCoursePageConstructor(){
     addHtmlToPage(attestationHtml);
     addHtmlToPage(redactSummaryAdminHtml);
     addHtmlToPage(redactSummaryTeacherHtml);
+    addHtmlToPage(newTeacherHtml);
 
     initRedactMarkPopup();
     initRedactSummaryAdmin();
     initRedactSummaryTeacher();
+    initPopupRedactStatus();
+    await initNewTacherPopup();
 
     courseData = await getCourseInfoQuery() as CourseInfoModel;
     courseData.teachers.forEach(teacher => {
@@ -51,6 +56,17 @@ async function singleCoursePageConstructor(){
     })
     await defineIfUserAdminOrMainTeacher();
     await constructAndFillSummary();
+
+    if (isUserAdminOrMainTeacher) {
+        const newTeacherButton = document.getElementById("new-teacher-button") as HTMLButtonElement;
+        newTeacherButton.classList.remove("invisible");
+        newTeacherButton.addEventListener("click", () => {
+            newTeacherPopupOn();
+        });
+
+        const newNotificationButton = document.getElementById("new-notification") as HTMLButtonElement;
+        newNotificationButton.classList.remove("invisible");
+    }
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
     teachersList.innerHTML = "";

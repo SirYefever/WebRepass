@@ -2,10 +2,7 @@ import {CourseStatuses, EditCourseStatusModel} from "../api/interfaces.ts";
 import {changeCourseStatusQuery} from "./singleCourseQueries.ts";
 import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
 
-
-function popupRedactStatus(){
-      togglePopup();
-
+function initPopupRedactStatus(){
       var saveButton = document.getElementById("confirm-redact-status-button") as HTMLButtonElement;
       saveButton?.addEventListener("click", () => changeCourseStatus())
       saveButton.disabled = true;
@@ -15,9 +12,7 @@ function popupRedactStatus(){
       const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
       const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
       const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
-      openedCheckbox.checked = false;
-      startedCheckbox.checked = false;
-      finishedCheckbox.checked = false;
+
       openedCheckbox.onclick = () => {
             openedCheckbox.checked = false;
             startedCheckbox.checked = false;
@@ -42,6 +37,20 @@ function popupRedactStatus(){
             finishedCheckbox.checked = true;
             saveButton.disabled = false;
       }
+}
+
+function popupRedactStatus(){
+      togglePopup();
+
+      const openedCheckbox = document.getElementById("opened-checkbox") as HTMLInputElement;
+      const startedCheckbox = document.getElementById("started-checkbox") as HTMLInputElement;
+      const finishedCheckbox = document.getElementById("finished-checkbox") as HTMLInputElement;
+      openedCheckbox.checked = false;
+      startedCheckbox.checked = false;
+      finishedCheckbox.checked = false;
+
+      const confirmButton = document.getElementById("confirm-redact-status-button") as HTMLButtonElement;
+      confirmButton.disabled = true;
 }
 
 function togglePopup(){
@@ -73,4 +82,4 @@ async function changeCourseStatus(): Promise<void>{
       throw response;
 }
 
-export {popupRedactStatus}
+export { initPopupRedactStatus, popupRedactStatus}

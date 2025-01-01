@@ -160,4 +160,8 @@ interface UserInfoModel{
   birthDate: string,
 }
 
-export type { UserInfoModel, EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+interface AddTeacherToCourseModel{
+  userId: string
+}
+
+export type { AddTeacherToCourseModel, UserInfoModel, EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
