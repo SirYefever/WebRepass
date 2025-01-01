@@ -17,7 +17,11 @@ import {
     changeQueuedStudentStatusQuery,
     getCourseInfoQuery
 } from "./singleCourseQueries.ts";
-import {popupRedactSummary} from "./redactCourseInfo.ts";
+import {
+    initRedactSummaryAdmin,
+    initRedactSummaryTeacher,
+    popupRedactSummary,
+} from "./redactCourseInfo.ts";
 import {popupRedactStatus} from "./redactCourseStatus.ts";
 import {initRedactMarkPopup, toggleRedactMarkPopupOn} from "./redactMark.ts";
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
@@ -36,6 +40,8 @@ async function singleCoursePageConstructor(){
     addHtmlToPage(redactSummaryTeacherHtml);
 
     initRedactMarkPopup();
+    initRedactSummaryAdmin();
+    initRedactSummaryTeacher();
 
     courseData = await getCourseInfoQuery() as CourseInfoModel;
     courseData.teachers.forEach(teacher => {
@@ -47,6 +53,7 @@ async function singleCoursePageConstructor(){
     await constructAndFillSummary();
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
+    teachersList.innerHTML = "";
     courseData.teachers.forEach(teacher => {
         let listItem = document.createElement("li");
         listItem.setAttribute("id", "teacher-list-item");
@@ -81,21 +88,20 @@ async function singleCoursePageConstructor(){
     });
 }
 
-async function updatePageContent(){
-    const subMainContainer = document.getElementById("sub-main-container") as HTMLUListElement;
-    subMainContainer.innerHTML = courseHtml;
-    courseData = await getCourseInfoQuery() as CourseInfoModel;
-
+async function updatePageContent2(){
     courseData = await getCourseInfoQuery() as CourseInfoModel;
     courseData.teachers.forEach(teacher => {
         if (teacher.isMain){
             mainTeacher = teacher;
         }
     })
+    const courseNamePar = document.getElementById("course-name") as HTMLParagraphElement;
+    courseNamePar.textContent = courseData.name;
     await defineIfUserAdminOrMainTeacher();
     await constructAndFillSummary();
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
+    teachersList.innerHTML = "";
     courseData.teachers.forEach(teacher => {
         let listItem = document.createElement("li");
         listItem.setAttribute("id", "teacher-list-item");
@@ -120,14 +126,6 @@ async function updatePageContent(){
 
     await constructStudentsUl(courseData);
 
-    makeSubMainContainerVisible();
-
-    $(document).ready(function() {
-        $('.summernote').summernote();
-    });
-    $('.summernote').summernote({
-        dialogsInBody: true
-    });
 }
 
 async function constructAndFillSummary() {
@@ -139,34 +137,40 @@ async function constructAndFillSummary() {
 
     const statusDiv = document.querySelector(".status-par-and-button-div") as HTMLDivElement;
     if (isUserAdminOrMainTeacher) {
-        const summaryRedactButton = document.createElement("button");
-        summaryRedactButton.textContent = "Redact course info";
-        summaryRedactButton.addEventListener("click", () => {
-            popupRedactSummary();
-        });
+        if (document.getElementById("summary-redact-button") === null){
+            const summaryRedactButton = document.createElement("button");
+            summaryRedactButton.textContent = "Redact course info";
+            summaryRedactButton.id = "summary-redact-button";
+            summaryRedactButton.addEventListener("click", () => {
+                // popupRedactSummary();//TODO change?
+                popupRedactSummary();
+            });
+            nameAndRedactSummaryButtonDiv.appendChild(summaryRedactButton);
+        }
 
-        nameAndRedactSummaryButtonDiv.appendChild(summaryRedactButton);
+        if (document.getElementById("redact-status-button") === null){
+            const redactStatusButton = document.createElement("button");
+            redactStatusButton.textContent = "Change status";
+            redactStatusButton.id = "redact-status-button";
+            redactStatusButton.addEventListener("click", () => {
+                popupRedactStatus();
+            })
 
-        const redactStatusButton = document.createElement("button");
-        redactStatusButton.textContent = "Change status";
-        redactStatusButton.addEventListener("click", () => {
-            popupRedactStatus();
-        })
+            statusDiv.appendChild(redactStatusButton);
+        }
 
-
-        statusDiv.appendChild(redactStatusButton);
     }
 
 
 
     const statusPar = document.getElementById("status-par") as HTMLParagraphElement;
-    statusPar.textContent += courseData.status;
+    statusPar.textContent = "Status: " + courseData.status;
     const yearPar = document.getElementById("year-par") as HTMLParagraphElement;
-    yearPar.textContent += courseData.startYear.toString();
+    yearPar.textContent = "Year: " + courseData.startYear.toString();
     const totalCountPar = document.getElementById("total-count-par") as HTMLParagraphElement;
-    totalCountPar.textContent += courseData.maximumStudentsCount.toString();
+    totalCountPar.textContent = "Maximum students: " + courseData.maximumStudentsCount.toString();
     const semesterPar = document.getElementById("semester-par") as HTMLParagraphElement;
-    semesterPar.textContent += courseData.semester;
+    semesterPar.textContent = "Semester: " + courseData.semester;
 
     const requirementsPar = document.getElementById("requirements-content") as HTMLDivElement;
     requirementsPar.innerHTML = await marked(courseData.requirements);
@@ -199,8 +203,8 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
     const pendingPar = document.getElementById("students-pending-par") as HTMLParagraphElement;
     const enrolledPar = document.getElementById("students-enrolled-par") as HTMLParagraphElement;
 
-    enrolledPar.textContent += studentsEnrolled.toString();
-    pendingPar.textContent += studentsInQueue.toString();
+    enrolledPar.textContent = "Pending requests:" + studentsEnrolled.toString();
+    pendingPar.textContent = "Students enrolled:" + studentsInQueue.toString();
 }
 
 async function createAndFillUserTemplate(studentData: StudentDataModel){
@@ -338,4 +342,4 @@ async function defineIfUserAdminOrMainTeacher(): Promise<void> {
 }
 
 
-export { updatePageContent, defineIfUserAdminOrMainTeacher, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};
+export { updatePageContent2, defineIfUserAdminOrMainTeacher, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};

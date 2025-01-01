@@ -12,11 +12,10 @@ import {
 } from "./singleCourseQueries.ts";
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
 import {
-        constructAndFillSummary,
-        getSemesterFromCheckboxes, mainTeacher, updatePageContent,
+        getSemesterFromCheckboxes, mainTeacher, updatePageContent2,
 } from "./singleCourse.ts";
 // import {get} from "jquery";
-import {fetchUsers, setUserRoles} from "../queries/usersQueries.ts";
+import {fetchUsers} from "../queries/usersQueries.ts";
 import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
 import {ProfileData} from "../LocalDataStorage.ts";
 import {isNullOrEmpty} from "../utils/utils.ts";
@@ -101,18 +100,14 @@ async function popupRedactSummary(){
         }
 }
 
-async function popupTeacherRedactSummary(){
-        const curUserEmail = ((await getCurrentUserProfileInfoQuery()) as UserInfoModel).email;
-        if (curUserEmail !== mainTeacher.email){
-                return;
-        }
+function initRedactSummaryTeacher(){
         const saveButton = document.getElementById("confirm-redact-summary-teacher-button");
         saveButton?.addEventListener("click", async () => {
                 const response = await changeCourseSummaryTeacherQuery(collectDataOverRedactSummaryFormForMainTeacher());
                 if (response.ok) {
                         toggleSuccessPopup();
                         toggleRedactSummaryPopup();
-                        await updatePageContent();
+                        await updatePageContent2();
                 } else {
                         toggleFailurePopup();
                 }
@@ -121,8 +116,34 @@ async function popupTeacherRedactSummary(){
         cancelButton?.addEventListener("click", async () => { await popupRedactSummary(); })
 }
 
-async function popupAdminRedactSummary(){
+async function popupTeacherRedactSummary(){
+        const curUserEmail = ((await getCurrentUserProfileInfoQuery()) as UserInfoModel).email;
+        if (curUserEmail !== mainTeacher.email){
+                return;
+        }
+}
 
+function initRedactSummaryAdmin(){
+        const saveButton = document.getElementById("confirm-redact-summary-admin-button");
+        saveButton?.addEventListener("click", async () => {
+                const editSummaryModel = await collectDataOverRedactSummaryFormForAdmin();
+                const response = await changeCourseSummaryAdminQuery(editSummaryModel);
+                if (response.ok) {
+                        toggleSuccessPopup();
+                        toggleRedactSummaryPopup();
+                        clearSummaryPopupContents();
+                        await updatePageContent2();
+
+                } else{
+                        toggleFailurePopup();
+                }
+        })
+
+        const cancelButton = document.getElementById("cancel-redact-summary-admin-button");
+        cancelButton?.addEventListener("click", async () => { toggleRedactSummaryPopup(); })
+}
+
+async function popupAdminRedactSummary(){
         const users = await fetchUsers() as UserModel[];
         const redactSummaryDiv = document.getElementById("redact-summary-admin-div") as HTMLInputElement;
         fillTeacherSelectWithUsers(users);
@@ -137,21 +158,6 @@ async function popupAdminRedactSummary(){
                 })
                 fillTeacherSelectWithUsers(subUsers);
         }
-
-        const saveButton = document.getElementById("confirm-redact-summary-admin-button");
-        saveButton?.addEventListener("click", async () => {
-                const editSummaryModel = await collectDataOverRedactSummaryFormForAdmin();
-                const response = await changeCourseSummaryAdminQuery(editSummaryModel);
-                if (response.ok) {
-                        toggleSuccessPopup();
-                        toggleRedactSummaryPopup();
-                        await updatePageContent();
-                } else{
-                        toggleFailurePopup();
-                }
-        })
-        const cancelButton = document.getElementById("cancel-redact-summary-admin-button");
-        cancelButton?.addEventListener("click", async () => { toggleRedactSummaryPopup(); })
 }
 
 
@@ -186,4 +192,4 @@ function toggleRedactSummaryPopup(){
         }
 }
 
-export {popupRedactSummary}
+export { initRedactSummaryTeacher, initRedactSummaryAdmin, toggleRedactSummaryPopup, popupRedactSummary}
