@@ -105,4 +105,17 @@ async function changeCourseSummaryAdminQuery(requestBody: EditCampusCourseModel)
     return response;
 }
 
-export { changeCourseSummaryAdminQuery, changeCourseSummaryTeacherQuery, changeAttestationMarkQuery, getCourseInfoQuery, changeQueuedStudentStatusQuery, changeCourseStatusQuery};
+async function assignForCourseQuery(){
+    const urlSplit = window.location.pathname.split("/");
+    const courseId = urlSplit[urlSplit.length - 1];
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/" + courseId + "/sign-up", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+        }
+    })
+    return response;
+}
+
+export { assignForCourseQuery, changeCourseSummaryAdminQuery, changeCourseSummaryTeacherQuery, changeAttestationMarkQuery, getCourseInfoQuery, changeQueuedStudentStatusQuery, changeCourseStatusQuery};

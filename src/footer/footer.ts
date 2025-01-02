@@ -8,14 +8,21 @@ function footerConstructor() {
     const loginAdminButton = document.getElementById('login-as-admin')! as HTMLButtonElement;
     loginAdminButton.onclick = loginAdmin;
 
+    const loginAsMainTeacher = document.getElementById('login-as-main-teacher')! as HTMLButtonElement;
+    loginAsMainTeacher.onclick = loginMainTeacher;
+
+    const loginAsTeacher = document.getElementById('login-as-teacher')! as HTMLButtonElement;
+    loginAsTeacher.onclick = loginTeacher;
+
     const loginStudentButton = document.getElementById('login-as-student')! as HTMLButtonElement;
     loginStudentButton.onclick = loginStudent;
+
+    const loginUserButton = document.getElementById('login-as-user')! as HTMLButtonElement;
+    loginUserButton.onclick = loginUser;
 
     const testBindButton = document.getElementById('test-bind-function')! as HTMLButtonElement;
     testBindButton.onclick = bind;
 
-    const loginAsTeacher = document.getElementById('login-as-teacher')! as HTMLButtonElement;
-    loginAsTeacher.onclick = loginTeacher;
 
     loadCSS("/src/footer/footer.css");
 }
@@ -34,7 +41,50 @@ async function loginAdmin(){
     window.location.reload();
 }
 
+async function loginMainTeacher(){
+    let loginData: UserLoginModel = { email:"user@test.ru", password:"qwerty1"};
+    const token = await login(loginData);
+    const storage = new AuthData();
+    if (token !== null)
+    {
+        const userData = new ProfileData();
+        userData.email = "user@test.ru";
+    }
+    storage.token = token;
+    await setUserRoles();
+    window.location.reload();
+}
+
+
+async function loginTeacher(){
+    let loginData: UserLoginModel = { email:"user@test.teacher", password:"qwerty1"};
+    const token = await login(loginData);
+    const storage = new AuthData();
+    if (token !== null)
+    {
+        const userData = new ProfileData();
+        userData.email = "user@test.teacher";
+    }
+    storage.token = token;
+    await setUserRoles();
+    window.location.reload();
+}
+
 async function loginStudent(){
+    let loginData: UserLoginModel = { email:"user@test.student", password:"qwerty1"};
+    const token = await login(loginData);
+    const storage = new AuthData();
+    if (token !== null)
+    {
+        const userData = new ProfileData();
+        userData.email = "user@student.com";
+    }
+    storage.token = token;
+    await setUserRoles();
+    window.location.reload();
+}
+
+async function loginUser(){
     let loginData: UserLoginModel = { email:"user@test.com", password:"qwerty1"};
     const token = await login(loginData);
     const storage = new AuthData();
@@ -95,18 +145,5 @@ function generateRandomString(): string {
     return result;
 }
 
-async function loginTeacher(){
-    let loginData: UserLoginModel = { email:"user@test.ru", password:"qwerty1"};
-    const token = await login(loginData);
-    const storage = new AuthData();
-    if (token !== null)
-    {
-        const userData = new ProfileData();
-        userData.email = "user@test.ru";
-    }
-    storage.token = token;
-    await setUserRoles();
-    window.location.reload();
-}
 
 export {footerConstructor};

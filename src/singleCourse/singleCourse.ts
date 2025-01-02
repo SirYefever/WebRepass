@@ -17,7 +17,7 @@ import {
     UserRolesForCourse,
 } from "../api/interfaces.ts";
 import {marked} from 'marked';
-import {changeQueuedStudentStatusQuery, getCourseInfoQuery} from "./singleCourseQueries.ts";
+import {assignForCourseQuery, changeQueuedStudentStatusQuery, getCourseInfoQuery} from "./singleCourseQueries.ts";
 import {initRedactSummaryAdmin, initRedactSummaryTeacher, popupRedactSummary,} from "./redactCourseInfo.ts";
 import {initPopupRedactStatus, popupRedactStatus} from "./redactCourseStatus.ts";
 import {initRedactMarkPopup, toggleRedactMarkPopupOn} from "./redactMark.ts";
@@ -25,6 +25,7 @@ import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
 import {ProfileData} from "../LocalDataStorage.ts";
 import {initNewTacherPopup, newTeacherPopupOn} from "./newTeacher.ts";
 import {initNewNotificationPopup, toggleNewNotificationPopupOn} from "./newNotification.ts";
+import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
 
 let courseData: CourseInfoModel;
 export let userRolesForCourse: UserRolesForCourse;
@@ -198,6 +199,26 @@ async function constructAndFillSummary() {
             statusDiv.appendChild(redactStatusButton);
         }
 
+    } else if (userRolesForCourse.userAuthority <= UserAuthority.InQueue){
+        if (document.getElementById("assign-button") === null){
+            const assignButton = document.createElement("button");
+            assignButton.textContent = "Assign for course";
+            assignButton.classList.add("assign-button");
+            assignButton.id = "assign-button";
+            if (userRolesForCourse.userAuthority === UserAuthority.InQueue){
+                assignButton.disabled = true;
+            }
+            assignButton.addEventListener("click", async() => {
+                const response = await assignForCourseQuery();
+                if (response.ok){
+                    toggleSuccessPopup();
+                    assignButton.disabled = true;
+                }else{
+                    toggleFailurePopup();
+                }
+            });
+            nameAndRedactSummaryButtonDiv.appendChild(assignButton);
+        }
     }
 
 
@@ -231,12 +252,17 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
     courseDataInput.students.forEach(async(student) =>  {
         if (student.status === StudentStatuses[StudentStatuses.Accepted]) {
             studentsEnrolled++;
+            let listItem = document.createElement("li");
+            listItem.appendChild(await createAndFillUserTemplate(student));
+            studentsList.appendChild(listItem);
         } else if (student.status === StudentStatuses[StudentStatuses.InQueue]){
             studentsInQueue++;
+            if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher){
+                let listItem = document.createElement("li");
+                listItem.appendChild(await createAndFillUserTemplate(student));
+                studentsList.appendChild(listItem);
+            }
         }
-        let listItem = document.createElement("li");
-        listItem.appendChild(await createAndFillUserTemplate(student));
-        studentsList.appendChild(listItem);
     })
 
     const pendingPar = document.getElementById("students-pending-par") as HTMLParagraphElement;
@@ -245,6 +271,8 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
     enrolledPar.textContent = "Pending requests:" + studentsEnrolled.toString();
     pendingPar.textContent = "Students enrolled:" + studentsInQueue.toString();
 }
+
+
 
 async function createAndFillUserTemplate(studentData: StudentDataModel){
     const namePar = document.createElement("p");
@@ -274,37 +302,51 @@ async function createAndFillUserTemplate(studentData: StudentDataModel){
     dataStudentDiv.appendChild(statusPar);
     dataStudentDiv.appendChild(emailPar);
     studentDiv.appendChild(dataStudentDiv);
-    const studentStatusDiv = await manageStudentStatus(studentData);
-    if (studentStatusDiv) {
-        studentDiv.appendChild(studentStatusDiv);
+    if (studentData.status === StudentStatuses[StudentStatuses.Accepted]) {
+        const studentStatusDiv = await manageAcceptedStudentStatus(studentData);
+        if (studentStatusDiv) {
+            studentDiv.appendChild(studentStatusDiv);
+        }
+    } else {
+        const studentStatusDiv = await manageQueuedStudentStatus(studentData);
+        if (studentStatusDiv) {
+            studentDiv.appendChild(studentStatusDiv);
+        }
     }
     return studentDiv;
 }
 
-async function manageStudentStatus(studentData: StudentDataModel): Promise<HTMLDivElement | undefined>  {
-    if (!(userRolesForCourse.userAuthority >= UserAuthority.MainTeacher)) {
+async function manageAcceptedStudentStatus(studentData: StudentDataModel): Promise<HTMLDivElement | undefined>  {
+    if ((userRolesForCourse.userAuthority <= UserAuthority.Student)) {
         return;
     }
-    if (studentData.status === StudentStatuses[StudentStatuses.InQueue]){
-        const queuedStudentDiv = document.createElement("div");
-        queuedStudentDiv.id = `queued-student-${studentData.id}`;
-        queuedStudentDiv.classList.add("queued-student-div");
 
-        const acceptButton = document.createElement("button");
-        acceptButton.textContent = "Accept";
-        acceptButton.classList.add("accept-button");
-        acceptButton.addEventListener("click", () => {changeQueuedStudentStatus(studentData.id, StudentStatuses[StudentStatuses.Accepted])});
-        queuedStudentDiv.appendChild(acceptButton);
+    if (userRolesForCourse.userAuthority === UserAuthority.Teacher) {
+        const attestationsDiv = document.createElement("div");
+        attestationsDiv.classList.add("attestations-div");
 
+        const intermediateAttestationDiv = document.createElement("div");
+        let intermediateAttestation = document.createElement("p");
+        intermediateAttestation.textContent = "Intermediate attestation - ";
+        intermediateAttestation.id = `par-${studentData.id}`;
 
-        const declineButton = document.createElement("button");
-        declineButton.textContent = "Decline";
-        declineButton.classList.add("decline-button");
-        declineButton.addEventListener("click", () => {changeQueuedStudentStatus(studentData.id, StudentStatuses[StudentStatuses.Declined])});
-        queuedStudentDiv.appendChild(declineButton);
+        intermediateAttestationDiv.appendChild(intermediateAttestation);
+        // @ts-ignore
+        intermediateAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.midtermResult]));
+        attestationsDiv.appendChild(intermediateAttestationDiv);
 
-        return queuedStudentDiv;
-    } else if (studentData.status === StudentStatuses[StudentStatuses.Accepted]){
+        const finalAttestationDiv = document.createElement("div");
+        const finalAttestation = document.createElement("p");
+        finalAttestation.textContent = "Final attestation - ";
+        finalAttestationDiv.appendChild(finalAttestation);
+        // @ts-ignore
+        finalAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.finalResult]));
+        attestationsDiv.appendChild(finalAttestationDiv);
+
+        return attestationsDiv;
+    }
+
+    if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher){
         const attestationsDiv = document.createElement("div");
         attestationsDiv.classList.add("attestations-div");
 
@@ -319,7 +361,6 @@ async function manageStudentStatus(studentData: StudentDataModel): Promise<HTMLD
         intermediateAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.midtermResult]));
         attestationsDiv.appendChild(intermediateAttestationDiv);
 
-
         const finalAttestationDiv = document.createElement("div");
         const finalAttestation = document.createElement("button");
         finalAttestation.textContent = "Final attestation - ";
@@ -329,11 +370,35 @@ async function manageStudentStatus(studentData: StudentDataModel): Promise<HTMLD
         finalAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.finalResult]));
         attestationsDiv.appendChild(finalAttestationDiv);
 
-
         return attestationsDiv;
-    } else {
+    }
+    return;
+}
+
+async function manageQueuedStudentStatus(studentData: StudentDataModel): Promise<HTMLDivElement | undefined>  {
+
+    if ((userRolesForCourse.userAuthority <= UserAuthority.Student)) {
         return;
     }
+
+    const queuedStudentDiv = document.createElement("div");
+    queuedStudentDiv.id = `queued-student-${studentData.id}`;
+    queuedStudentDiv.classList.add("queued-student-div");
+
+    const acceptButton = document.createElement("button");
+    acceptButton.textContent = "Accept";
+    acceptButton.classList.add("accept-button");
+    acceptButton.addEventListener("click", () => {changeQueuedStudentStatus(studentData.id, StudentStatuses[StudentStatuses.Accepted])});
+    queuedStudentDiv.appendChild(acceptButton);
+
+
+    const declineButton = document.createElement("button");
+    declineButton.textContent = "Decline";
+    declineButton.classList.add("decline-button");
+    declineButton.addEventListener("click", () => {changeQueuedStudentStatus(studentData.id, StudentStatuses[StudentStatuses.Declined])});
+    queuedStudentDiv.appendChild(declineButton);
+
+    return queuedStudentDiv;
 }
 
 function createAttestationStatusDiv(mark: Mark){
@@ -403,6 +468,13 @@ async function setUserRolesInsideCourse(courseData?: CourseInfoModel, userData?:
 
         if (teacher.email === userData.email){
             setUserAuthority(UserAuthority.Teacher, userRolesForCourse);
+            return;
+        }
+    })
+
+    courseData?.students.forEach(student => {
+        if (student.email === userData.email && student.status === StudentStatuses[StudentStatuses.InQueue]){
+            setUserAuthority(UserAuthority.InQueue, userRolesForCourse);
             return;
         }
     })

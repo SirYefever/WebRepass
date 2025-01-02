@@ -172,6 +172,7 @@ interface AddCampusCourseNotificationModel{
 
 export enum UserAuthority {
   User,
+  InQueue,
   Student,
   Teacher,
   MainTeacher,
