@@ -104,7 +104,8 @@ interface CourseInfoModel{
   annotations: string,
   status: string,
   students: StudentDataModel[],
-  teachers: CourseTeacherModel[];
+  teachers: CourseTeacherModel[],
+  notifications: AddCampusCourseNotificationModel[]
 }
 
 export enum StudentStatuses{
@@ -164,4 +165,21 @@ interface AddTeacherToCourseModel{
   userId: string
 }
 
-export type { AddTeacherToCourseModel, UserInfoModel, EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }
+interface AddCampusCourseNotificationModel{
+  text: string,
+  isImportant: boolean
+}
+
+export enum UserAuthority {
+  User,
+  Student,
+  Teacher,
+  MainTeacher,
+  Administrator
+}
+
+interface UserRolesForCourse {
+  userAuthority: UserAuthority;
+}
+
+export type { UserRolesForCourse, AddCampusCourseNotificationModel, AddTeacherToCourseModel, UserInfoModel, EditCampusCourseModel, CourseTeacherModel, EditCampusCourseRequirementsAndAnnotationsModel, EditCourseStudentMarkModel, EditCourseStatusModel, StudentDataModel, CourseInfoModel, UserModel, CreateCampusCourseModel, CampusCourseModel, CreateCampusGroupModel, EditCampusGroupModel, UserRoles, Group, UserLoginModel, UserRegisterModel, UserRegisterModel as DoctorRegisterModel, LoginApiResponse, ProfileApiInterface as ProfileApiResponse }

@@ -28,10 +28,10 @@ async function loginAdmin(){
     {
         let userData = new ProfileData();
         userData.email = "gymboss@gachi.com";
-        window.location.reload();
     }
     storage.token = token;
     await setUserRoles();
+    window.location.reload();
 }
 
 async function loginStudent(){
@@ -42,10 +42,10 @@ async function loginStudent(){
     {
         const userData = new ProfileData();
         userData.email = "user@test.com";
-        window.location.reload();
     }
     storage.token = token;
     await setUserRoles();
+    window.location.reload();
 }
 
 
@@ -103,10 +103,10 @@ async function loginTeacher(){
     {
         const userData = new ProfileData();
         userData.email = "user@test.ru";
-        window.location.reload();
     }
     storage.token = token;
     await setUserRoles();
+    window.location.reload();
 }
 
 export {footerConstructor};

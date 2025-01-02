@@ -4,6 +4,7 @@ import attestationHtml from './popups/attestation.html?raw'
 import redactSummaryTeacherHtml from './popups/redactSummaryTeacher.html?raw'
 import redactSummaryAdminHtml from './popups/redactSumarryAdmin.html?raw'
 import newTeacherHtml from './popups/newTeacherPopup.html?raw'
+import newNotificationHtml from './popups/newNotification.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {
     CourseInfoModel,
@@ -12,25 +13,23 @@ import {
     MarkType,
     StudentDataModel,
     StudentStatuses,
+    UserAuthority,
+    UserInfoModel,
+    UserRolesForCourse,
 } from "../api/interfaces.ts";
 import {marked} from 'marked';
-import {
-    changeQueuedStudentStatusQuery,
-    getCourseInfoQuery
-} from "./singleCourseQueries.ts";
-import {
-    initRedactSummaryAdmin,
-    initRedactSummaryTeacher,
-    popupRedactSummary,
-} from "./redactCourseInfo.ts";
+import {changeQueuedStudentStatusQuery, getCourseInfoQuery} from "./singleCourseQueries.ts";
+import {initRedactSummaryAdmin, initRedactSummaryTeacher, popupRedactSummary,} from "./redactCourseInfo.ts";
 import {initPopupRedactStatus, popupRedactStatus} from "./redactCourseStatus.ts";
 import {initRedactMarkPopup, toggleRedactMarkPopupOn} from "./redactMark.ts";
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
 import {ProfileData} from "../LocalDataStorage.ts";
 import {initNewTacherPopup, newTeacherPopupOn} from "./newTeacher.ts";
+import {initNewNotificationPopup, toggleNewNotificationPopupOn} from "./newNotification.ts";
 
 export let mainTeacher: CourseTeacherModel;
 let courseData: CourseInfoModel;
+export let userRolesForCourse: UserRolesForCourse;
 export let isUserAdminOrMainTeacher: boolean = false;
 
 
@@ -41,12 +40,8 @@ async function singleCoursePageConstructor(){
     addHtmlToPage(redactSummaryAdminHtml);
     addHtmlToPage(redactSummaryTeacherHtml);
     addHtmlToPage(newTeacherHtml);
+    addHtmlToPage(newNotificationHtml);
 
-    initRedactMarkPopup();
-    initRedactSummaryAdmin();
-    initRedactSummaryTeacher();
-    initPopupRedactStatus();
-    await initNewTacherPopup();
 
     courseData = await getCourseInfoQuery() as CourseInfoModel;
     courseData.teachers.forEach(teacher => {
@@ -54,7 +49,19 @@ async function singleCoursePageConstructor(){
             mainTeacher = teacher;
         }
     })
+    await setUserRolesInsideCourse(courseData);
+
     await defineIfUserAdminOrMainTeacher();
+
+    if (isUserAdminOrMainTeacher) {
+        initRedactMarkPopup();
+        initRedactSummaryAdmin();
+        initRedactSummaryTeacher();
+        initPopupRedactStatus();
+        await initNewTacherPopup();
+        initNewNotificationPopup();
+    }
+
     await constructAndFillSummary();
 
     if (isUserAdminOrMainTeacher) {
@@ -66,7 +73,13 @@ async function singleCoursePageConstructor(){
 
         const newNotificationButton = document.getElementById("new-notification") as HTMLButtonElement;
         newNotificationButton.classList.remove("invisible");
+        newNotificationButton.addEventListener("click", () => {
+            toggleNewNotificationPopupOn();
+        })
     }
+
+    await updateNotifications(courseData);
+
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
     teachersList.innerHTML = "";
@@ -101,6 +114,31 @@ async function singleCoursePageConstructor(){
     });
     $('.summernote').summernote({
         dialogsInBody: true
+    });
+}
+
+async function updateNotifications(courseData?: CourseInfoModel) {
+    if (courseData === null || courseData === undefined) {
+        courseData = await getCourseInfoQuery() as CourseInfoModel;
+    }
+
+    const notificationsList = document.getElementById("notifications-list") as HTMLDivElement;
+    notificationsList.innerHTML = "";
+    courseData.notifications.forEach(notif => {
+        let listItem = document.createElement("li");
+        let notifDiv = document.createElement("div");
+
+        const notifText = document.createElement("p");
+        notifText.textContent = notif.text;
+
+        if (notif.isImportant){
+            notifDiv.classList.add("important-notify");
+        }
+
+        notifDiv.appendChild(notifText);
+        listItem.appendChild(notifDiv);
+
+        notificationsList.appendChild(listItem);
     });
 }
 
@@ -357,5 +395,48 @@ async function defineIfUserAdminOrMainTeacher(): Promise<void> {
     isUserAdminOrMainTeacher = (userInfo.userRoles.isAdmin || mainTeacher.email === (await getCurrentUserProfileInfoQuery()).email);
 }
 
+function setUserAuthority(authority: UserAuthority, userRoles: UserRolesForCourse){
+    userRoles.userAuthority = Math.max(userRoles.userAuthority, authority);
+}
 
-export { updatePageContent2, defineIfUserAdminOrMainTeacher, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};
+async function setUserRolesInsideCourse(courseData?: CourseInfoModel, userData?: UserInfoModel){
+    if (courseData === null || courseData === undefined){
+        courseData = await getCourseInfoQuery() as CourseInfoModel;
+    }
+
+    if (userData === null || userData === undefined){
+        userData = await getCurrentUserProfileInfoQuery();
+    }
+
+    const userInfo = new ProfileData();
+    if (userInfo.userRoles.isAdmin){
+        setUserAuthority(UserAuthority.Administrator, userRolesForCourse);
+        return;
+    }
+
+    courseData.teachers.forEach(teacher => {
+        if (teacher.isMain) {
+            mainTeacher = teacher;
+            if (teacher.email === userData.email){
+                setUserAuthority(UserAuthority.MainTeacher, userRolesForCourse);
+                return;
+            }
+        }
+
+        if (teacher.email === userData.email){
+            setUserAuthority(UserAuthority.Teacher, userRolesForCourse);
+            return;
+        }
+    })
+
+    courseData?.students.forEach(student => {
+        if (student.email === userData.email){
+            setUserAuthority(UserAuthority.User, userRolesForCourse);
+            return;
+        }
+    })
+    console.log("Couldn't set user authority value");
+}
+
+
+export { updateNotifications, updatePageContent2, defineIfUserAdminOrMainTeacher, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};

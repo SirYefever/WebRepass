@@ -158,3 +158,24 @@
     width: fit-content;
     max-width: 20%;
 }
+
+#new-notification-div{
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: fit-content;
+}
+
+#new-notification-popup-span {
+    background-color: black;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: fit-content;
+}
+
+#gcdf2h{
+    display: flex;
+    flex-direction: column;
+}

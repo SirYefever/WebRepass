@@ -1,12 +1,15 @@
 import loginHTML from './login.html?raw'
 import {constructPage2, makeSubMainContainerVisible} from '../index/index'
-import { AuthData, ProfileData } from "../LocalDataStorage.ts";
+import {AuthData, ProfileData} from "../LocalDataStorage.ts";
 import { UserLoginModel } from '../api/interfaces.ts';
 import {footerConstructor} from "../footer/footer.ts";
 import {setUserRoles} from "../queries/usersQueries.ts";
 
 
 async function login(requestBody: object) {
+    localStorage.removeItem("data");
+    localStorage.removeItem("profile");
+    localStorage.removeItem("userRoles");
     const response = await fetch("https://camp-courses.api.kreosoft.space/login", {
         method: "POST",
         body: JSON.stringify(requestBody),

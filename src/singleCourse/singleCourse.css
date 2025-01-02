@@ -122,3 +122,7 @@
 #invisible{
     visibility: hidden;
 }
+
+.important-notify{
+    background-color: palevioletred;
+}
