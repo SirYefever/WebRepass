@@ -1,7 +1,6 @@
 
 import profileHTML from './profile.html?raw'
-import {constructPage2, makeSubMainContainerVisible, refillSubMainContainer} from '../index/index'
-import { constructPage } from '../index/index'
+import {constructPage2, makeSubMainContainerVisible} from '../index/index'
 import { ProfileData } from "../LocalDataStorage.ts";
 import { ProfileApiResponse as ProfileApiInterface } from '../api/interfaces.ts';
 import { AuthData } from '../LocalDataStorage.ts';
@@ -22,13 +21,13 @@ async function profileGetRequest(): Promise<ProfileApiInterface> {
 }
 
 async function redactProfileLogic() {
+    const profileData = new ProfileData();
     const name = document.getElementById('name-input')! as HTMLInputElement;
     const birth = document.getElementById('birth-day-selector')! as HTMLInputElement;
-    let newProfileData: ProfileApiInterface = {fullName: name.value, birthDate: birth.value};
+    let newProfileData: ProfileApiInterface = {fullName: name.value, birthDate: birth.value, email: profileData.email};
     newProfileData.birthDate = birth.value;
     newProfileData.fullName = name.value;
-    const token = new AuthData().token;
-    profilePutRequest(newProfileData);
+    await profilePutRequest(newProfileData);
 }
 
 async function profilePutRequest(newProfileData: ProfileApiInterface)  {
@@ -51,8 +50,8 @@ async function profileLogic() {
     console.log("profile fired");
     let profileStorage = new ProfileData();
     const profile = await profileGetRequest();
-    profileStorage.name = profile.name!;
-    profileStorage.birthday = profile.birthday!;
+    profileStorage.name = profile.fullName!;
+    profileStorage.birthday = profile.birthDate!;
     profileStorage.email = profile.email!;
     // window.location.assign('/');
 }

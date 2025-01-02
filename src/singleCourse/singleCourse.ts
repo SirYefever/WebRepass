@@ -8,7 +8,6 @@ import newNotificationHtml from './popups/newNotification.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {
     CourseInfoModel,
-    CourseTeacherModel,
     Mark,
     MarkType,
     StudentDataModel,
@@ -27,10 +26,8 @@ import {ProfileData} from "../LocalDataStorage.ts";
 import {initNewTacherPopup, newTeacherPopupOn} from "./newTeacher.ts";
 import {initNewNotificationPopup, toggleNewNotificationPopupOn} from "./newNotification.ts";
 
-export let mainTeacher: CourseTeacherModel;
 let courseData: CourseInfoModel;
 export let userRolesForCourse: UserRolesForCourse;
-export let isUserAdminOrMainTeacher: boolean = false;
 
 
 async function singleCoursePageConstructor(){
@@ -44,16 +41,9 @@ async function singleCoursePageConstructor(){
 
 
     courseData = await getCourseInfoQuery() as CourseInfoModel;
-    courseData.teachers.forEach(teacher => {
-        if (teacher.isMain){
-            mainTeacher = teacher;
-        }
-    })
     await setUserRolesInsideCourse(courseData);
 
-    await defineIfUserAdminOrMainTeacher();
-
-    if (isUserAdminOrMainTeacher) {
+    if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher) {
         initRedactMarkPopup();
         initRedactSummaryAdmin();
         initRedactSummaryTeacher();
@@ -64,7 +54,7 @@ async function singleCoursePageConstructor(){
 
     await constructAndFillSummary();
 
-    if (isUserAdminOrMainTeacher) {
+    if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher) {
         const newTeacherButton = document.getElementById("new-teacher-button") as HTMLButtonElement;
         newTeacherButton.classList.remove("invisible");
         newTeacherButton.addEventListener("click", () => {
@@ -144,14 +134,9 @@ async function updateNotifications(courseData?: CourseInfoModel) {
 
 async function updatePageContent2(){
     courseData = await getCourseInfoQuery() as CourseInfoModel;
-    courseData.teachers.forEach(teacher => {
-        if (teacher.isMain){
-            mainTeacher = teacher;
-        }
-    })
     const courseNamePar = document.getElementById("course-name") as HTMLParagraphElement;
     courseNamePar.textContent = courseData.name;
-    await defineIfUserAdminOrMainTeacher();
+    await setUserRolesInsideCourse(courseData);
     await constructAndFillSummary();
 
     const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
@@ -190,7 +175,7 @@ async function constructAndFillSummary() {
     const nameAndRedactSummaryButtonDiv = document.getElementById("summary-and-redact-button") as HTMLDivElement;
 
     const statusDiv = document.querySelector(".status-par-and-button-div") as HTMLDivElement;
-    if (isUserAdminOrMainTeacher) {
+    if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher) {
         if (document.getElementById("summary-redact-button") === null){
             const summaryRedactButton = document.createElement("button");
             summaryRedactButton.textContent = "Redact course info";
@@ -297,7 +282,7 @@ async function createAndFillUserTemplate(studentData: StudentDataModel){
 }
 
 async function manageStudentStatus(studentData: StudentDataModel): Promise<HTMLDivElement | undefined>  {
-    if (!isUserAdminOrMainTeacher) {
+    if (!(userRolesForCourse.userAuthority >= UserAuthority.MainTeacher)) {
         return;
     }
     if (studentData.status === StudentStatuses[StudentStatuses.InQueue]){
@@ -388,18 +373,12 @@ function getSemesterFromCheckboxes(){
     return null;
 }
 
-
-
-async function defineIfUserAdminOrMainTeacher(): Promise<void> {
-    const userInfo = new ProfileData();
-    isUserAdminOrMainTeacher = (userInfo.userRoles.isAdmin || mainTeacher.email === (await getCurrentUserProfileInfoQuery()).email);
-}
-
 function setUserAuthority(authority: UserAuthority, userRoles: UserRolesForCourse){
     userRoles.userAuthority = Math.max(userRoles.userAuthority, authority);
 }
 
 async function setUserRolesInsideCourse(courseData?: CourseInfoModel, userData?: UserInfoModel){
+    userRolesForCourse =  {userAuthority: UserAuthority.User} as UserRolesForCourse;
     if (courseData === null || courseData === undefined){
         courseData = await getCourseInfoQuery() as CourseInfoModel;
     }
@@ -416,7 +395,6 @@ async function setUserRolesInsideCourse(courseData?: CourseInfoModel, userData?:
 
     courseData.teachers.forEach(teacher => {
         if (teacher.isMain) {
-            mainTeacher = teacher;
             if (teacher.email === userData.email){
                 setUserAuthority(UserAuthority.MainTeacher, userRolesForCourse);
                 return;
@@ -431,12 +409,12 @@ async function setUserRolesInsideCourse(courseData?: CourseInfoModel, userData?:
 
     courseData?.students.forEach(student => {
         if (student.email === userData.email){
-            setUserAuthority(UserAuthority.User, userRolesForCourse);
+            setUserAuthority(UserAuthority.Student, userRolesForCourse);
             return;
         }
     })
-    console.log("Couldn't set user authority value");
+    setUserAuthority(UserAuthority.User, userRolesForCourse);
 }
 
 
-export { updateNotifications, updatePageContent2, defineIfUserAdminOrMainTeacher, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};
+export { updateNotifications, updatePageContent2, constructStudentsUl, constructAndFillSummary, getSemesterFromCheckboxes, singleCoursePageConstructor};

@@ -2,7 +2,7 @@ import {
         CourseInfoModel,
         EditCampusCourseModel,
         EditCampusCourseRequirementsAndAnnotationsModel,
-        UserInfoModel,
+        UserAuthority,
         UserModel,
 } from "../api/interfaces.ts";
 import {
@@ -10,10 +10,7 @@ import {
         changeCourseSummaryTeacherQuery,
         getCourseInfoQuery
 } from "./singleCourseQueries.ts";
-import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
-import {
-        getSemesterFromCheckboxes, mainTeacher, updatePageContent2,
-} from "./singleCourse.ts";
+import {getSemesterFromCheckboxes, updatePageContent2, userRolesForCourse,} from "./singleCourse.ts";
 // import {get} from "jquery";
 import {fetchUsers} from "../queries/usersQueries.ts";
 import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
@@ -89,11 +86,9 @@ function collectDataOverRedactSummaryFormForMainTeacher(): EditCampusCourseRequi
 }
 
 async function popupRedactSummary(){
-        const userRoles = new ProfileData().userRoles;
-
         toggleRedactSummaryPopup();
         // clearSummaryPopupContents();
-        if (userRoles.isAdmin){
+        if (userRolesForCourse.userAuthority === UserAuthority.Administrator){
                 await popupAdminRedactSummary();
         } else {
                 await popupTeacherRedactSummary();
@@ -117,10 +112,7 @@ function initRedactSummaryTeacher(){
 }
 
 async function popupTeacherRedactSummary(){
-        const curUserEmail = ((await getCurrentUserProfileInfoQuery()) as UserInfoModel).email;
-        if (curUserEmail !== mainTeacher.email){
-                return;
-        }
+        //What?
 }
 
 function initRedactSummaryAdmin(){
@@ -161,8 +153,7 @@ async function popupAdminRedactSummary(){
 }
 
 function toggleRedactSummaryPopup(){
-        const userInfo = new ProfileData;
-        if (userInfo.userRoles.isAdmin){
+        if (userRolesForCourse.userAuthority === UserAuthority.Administrator){
                 var popup = document.getElementById("redact-summary-admin-span");
                 popup?.classList.toggle("show");
         } else {
