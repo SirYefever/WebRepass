@@ -10,7 +10,7 @@ import { defaultPageConstructor } from '../defaultPage/defaultPage'
 import {groupsPageConstructor} from "../groups/groups.ts";
 import footerHtml from '../footer/footer.html?raw'
 import {footerConstructor} from "../footer/footer.ts";
-import {coursesPageConstructor} from "../courses/courses.ts";
+import {coursesPageConstructor, myCoursesPageConstructor, teachingCoursesPageConstructor} from "../courses/courses.ts";
 import $ from 'jquery';
 import {singleCoursePageConstructor} from "../singleCourse/singleCourse.ts";
 
@@ -41,6 +41,12 @@ router.template('courses', function () {
 router.template('singleCourse', function () {
     singleCoursePageConstructor();
 })
+router.template('my', function () {
+    myCoursesPageConstructor();
+})
+router.template('teaching', function () {
+    teachingCoursesPageConstructor();
+})
 router.route('/login', 'login');
 router.route('/registration', 'registration');
 router.route('/profile', 'profile');
@@ -50,6 +56,8 @@ router.route('/groups', 'groups')
 router.route('/', 'root');
 router.route('/groups/', 'courses');
 router.route('/courses/', 'singleCourse');
+router.route('/courses/my', 'my');
+router.route('/courses/teaching', 'teaching');
 
 
 function constructPage(innerHTML: string) {

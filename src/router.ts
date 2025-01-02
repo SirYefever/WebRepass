@@ -34,7 +34,13 @@ class Router {
         if (url.includes("groups/")){
             route = this.resolveRoute("/groups/") as (() => void);
         } else if (url.includes("courses/")){
-            route = this.resolveRoute("/courses/") as (() => void);
+            if (url.includes("my")){
+                route = this.resolveRoute("/courses/my") as (() => void);
+            } else if (url.includes("teaching")){
+                route = this.resolveRoute("/courses/teaching") as (() => void);
+            } else{
+                route = this.resolveRoute("/courses/") as (() => void);
+            }
         } else {
             route = this.resolveRoute(url) as (() => void);
         }

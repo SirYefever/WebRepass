@@ -39,6 +39,24 @@ export default function headerBuilder(): HTMLDivElement {
 
         leftHeaderDiv.appendChild(groupsAnchor);
 
+        if (profileData.userRoles.isStudent){
+            const myCourses = document.createElement("a");
+            myCourses.href = "/courses/my";
+            myCourses.textContent = "My Courses";
+            myCourses.classList.add("headerAnchor");
+
+            leftHeaderDiv.appendChild(myCourses);
+        }
+
+        if (profileData.userRoles.isTeacher){
+            const teachingCourses = document.createElement("a");
+            teachingCourses.href = "/courses/teaching";
+            teachingCourses.textContent = "Teaching courses";
+            teachingCourses.classList.add("headerAnchor");
+
+            leftHeaderDiv.appendChild(teachingCourses);
+        }
+
         const profileAnchor = document.createElement("a");
         profileAnchor.href = "/profile";
         profileAnchor.classList.add("headerAnchor");

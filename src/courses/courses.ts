@@ -2,7 +2,13 @@ import coursesHtml from './courses.html?raw'
 import createPopupHtml from './popups/newCourse.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
-import {CampusCourseModel, CourseStatuses, CreateCampusCourseModel, UserModel, UserRoles} from "../api/interfaces.ts";
+import {
+    CampusCourseModel,
+    CourseStatuses,
+    CreateCampusCourseModel,
+    UserModel,
+    UserRoles
+} from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
 
 async function coursesPageConstructor(){
@@ -19,6 +25,40 @@ async function coursesPageConstructor(){
         createNewDiv?.appendChild(createNewButton);
     }
     displayCourses(await fetchCourses());
+    $(document).ready(function() {
+        $('.summernote').summernote();
+    });
+    $('.summernote').summernote({
+        dialogsInBody: true
+    });
+    makeSubMainContainerVisible();
+}
+
+async function myCoursesPageConstructor(){
+    constructPage2(coursesHtml, "/src/courses/courses.css");
+    addHtmlToPage(createPopupHtml, "/src/courses/popups/popup.css");
+
+    const groupNamePar = document.getElementById("group-name-par") as HTMLParagraphElement;
+    groupNamePar.textContent = "My Courses";
+
+    displayCourses(await myCoursesQuery());
+    $(document).ready(function() {
+        $('.summernote').summernote();
+    });
+    $('.summernote').summernote({
+        dialogsInBody: true
+    });
+    makeSubMainContainerVisible();
+}
+
+async function teachingCoursesPageConstructor(){
+    constructPage2(coursesHtml, "/src/courses/courses.css");
+    addHtmlToPage(createPopupHtml, "/src/courses/popups/popup.css");
+
+    const groupNamePar = document.getElementById("group-name-par") as HTMLParagraphElement;
+    groupNamePar.textContent = "Teaching Courses";
+
+    displayCourses(await teachingCoursesQuery());
     $(document).ready(function() {
         $('.summernote').summernote();
     });
@@ -306,7 +346,6 @@ async function fetchUsers():Promise<UserModel[] | undefined>{
         method: "GET",
         headers: {
             "Authorization": "Bearer " + authData.token,
-            "Content-Type": "application/json"
         },
     })
     if (response.ok) {
@@ -314,4 +353,33 @@ async function fetchUsers():Promise<UserModel[] | undefined>{
     }
 }
 
-export { coursesPageConstructor };
+
+async function myCoursesQuery():Promise<CampusCourseModel[]>{
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/my", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+        },
+    })
+    if (response.ok) {
+        return response.json();
+    }
+    throw response;
+}
+
+async function teachingCoursesQuery():Promise<CampusCourseModel[]>{
+    const authData = new AuthData();
+    const response = await fetch("https://camp-courses.api.kreosoft.space/courses/teaching", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + authData.token,
+        },
+    })
+    if (response.ok) {
+        return response.json();
+    }
+    throw response;
+}
+
+export { myCoursesPageConstructor, teachingCoursesPageConstructor, coursesPageConstructor };
