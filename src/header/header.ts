@@ -14,16 +14,18 @@ export default function headerBuilder(): HTMLDivElement {
     const middleHeaderDiv = document.createElement("div");
     const rightHeaderDiv = document.createElement("div");
     const leftHeaderDiv = document.createElement("div");
-    const websiteNamePar = document.createElement("p");
-    websiteNamePar.textContent = "Кампусные курсы"
-    leftHeaderDiv.appendChild(websiteNamePar);
+    const websiteNameAnchor = document.createElement("a");
+    websiteNameAnchor.textContent = "Кампусные курсы"
+    websiteNameAnchor.href = "/"
+
+    leftHeaderDiv.appendChild(websiteNameAnchor);
 
     div.id = "header-div"
     div.classList.add("headerDiv");
     leftHeaderDiv.classList.add("left-header-div");
     middleHeaderDiv.classList.add("middleHeaderDiv");
     rightHeaderDiv.classList.add("rightHeaderDiv");
-    websiteNamePar.classList.add("website-name-par");
+    websiteNameAnchor.classList.add("website-name-par");
 
     // div.appendChild(logo);
     div.appendChild(leftHeaderDiv);

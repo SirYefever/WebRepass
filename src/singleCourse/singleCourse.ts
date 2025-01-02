@@ -170,7 +170,7 @@ async function updatePageContent2(){
 
 async function constructAndFillSummary() {
 
-    const courseNamePar = document.getElementById("course-name") as HTMLParagraphElement;
+    const courseNamePar = document.getElementById("course-name") as HTMLAnchorElement;
     courseNamePar.textContent = courseData.name;
 
     const nameAndRedactSummaryButtonDiv = document.getElementById("summary-and-redact-button") as HTMLDivElement;
@@ -235,7 +235,7 @@ async function constructAndFillSummary() {
     const requirementsPar = document.getElementById("requirements-content") as HTMLDivElement;
     requirementsPar.innerHTML = await marked(courseData.requirements);
     const annoPar = document.getElementById("anno-content") as HTMLDivElement;
-    annoPar.innerHTML = await marked(courseData.requirements);
+    annoPar.innerHTML = await marked(courseData.annotations);
 }
 
 
@@ -262,14 +262,18 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
                 listItem.appendChild(await createAndFillUserTemplate(student));
                 studentsList.appendChild(listItem);
             }
+        } else if (student.status === StudentStatuses[StudentStatuses.Declined]){
+            let listItem = document.createElement("li");
+            listItem.appendChild(await createAndFillUserTemplate(student));
+            studentsList.appendChild(listItem);
         }
     })
 
     const pendingPar = document.getElementById("students-pending-par") as HTMLParagraphElement;
     const enrolledPar = document.getElementById("students-enrolled-par") as HTMLParagraphElement;
 
-    enrolledPar.textContent = "Pending requests:" + studentsEnrolled.toString();
-    pendingPar.textContent = "Students enrolled:" + studentsInQueue.toString();
+    enrolledPar.textContent = "Students enrolled: " + studentsEnrolled.toString();
+    pendingPar.textContent = "Pending requests: " + studentsInQueue.toString();
 }
 
 
@@ -284,7 +288,9 @@ async function createAndFillUserTemplate(studentData: StudentDataModel){
     statusPar.classList.add("student-status-par")
     if (studentData.status === StudentStatuses[StudentStatuses.Accepted]) {
         statusPar.classList.add("student-accepted");
-    } else {
+    } else if (studentData.status === StudentStatuses[StudentStatuses.InQueue]){
+        statusPar.classList.add("student-in-queue");
+    } else if (studentData.status === StudentStatuses[StudentStatuses.Declined]){
         statusPar.classList.add("student-declined");
     }
 
@@ -307,11 +313,13 @@ async function createAndFillUserTemplate(studentData: StudentDataModel){
         if (studentStatusDiv) {
             studentDiv.appendChild(studentStatusDiv);
         }
-    } else {
+    } else if (studentData.status === StudentStatuses[StudentStatuses.InQueue]) {
         const studentStatusDiv = await manageQueuedStudentStatus(studentData);
         if (studentStatusDiv) {
             studentDiv.appendChild(studentStatusDiv);
         }
+    } else if (studentData.status === StudentStatuses[StudentStatuses.Declined]) {
+
     }
     return studentDiv;
 }

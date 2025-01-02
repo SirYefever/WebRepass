@@ -130,3 +130,7 @@
 .assign-button{
     background-color: green;
 }
+
+.student-in-queue{
+    color: darkgoldenrod;
+}

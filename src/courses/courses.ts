@@ -28,7 +28,14 @@ async function coursesPageConstructor(){
     $(document).ready(function() {
         $('.summernote').summernote();
     });
-    $('.summernote').summernote({
+    $(document).ready(function() {
+        $('#requirements-div').summernote();
+        $('#annotations-div').summernote();
+    });
+    $('#requirements-div').summernote({
+        dialogsInBody: true
+    });
+    $('#annotations-div').summernote({
         dialogsInBody: true
     });
     makeSubMainContainerVisible();
