@@ -13,3 +13,14 @@
     max-width: 90%;
     text-align: center;
 }
+
+@media (max-width: 1200px) {
+
+    .welcome-par{
+        font-family: "Montserrat", serif;
+        font-size: 45px;
+        font-weight: 300;
+        max-width: 90%;
+        text-align: center;
+    }
+}
