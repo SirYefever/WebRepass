@@ -1,51 +1,94 @@
-<p id="course-name">NAME</p>
-<div id="summary-and-redact-button">
-  <p>Summary</p>
+<div class="course-name-div">
+  <p id="course-name">NAME</p>
 </div>
 
-<div id="summary">
-  <div id="summary-data">
-    <div class="status-par-and-button-div" id="status-par-and-button-div">
-      <p id="status-par">Status: </p>
-    </div>
-    <p id="year-par">Year: </p>
-    <p id="total-count-par">Total students: </p>
-    <p id="students-pending-par">Pending requests: </p>
-    <p id="semester-par">Semester: </p>
-    <p id="students-enrolled-par">Students enrolled: </p>
+<div id="some-summary-info">
+  <div class="summary-piece-div" id="status-piece-div">
+    <p class="summary-font-letters" id="status-par-name">Статус</p>
+    <p class="summary-font-numbers" id="status-par"></p>
+  </div>
+
+  <div class="summary-piece-div">
+    <p class="summary-font-letters" id="year-par-name">Год</p>
+    <p class="summary-font-numbers" id="year-par"></p>
+  </div>
+
+  <div class="summary-piece-div">
+    <p class="summary-font-letters" id="total-count-par-name">Мест всего</p>
+    <p class="summary-font-numbers" id="total-count-par"></p>
+  </div>
+
+  <div class="summary-piece-div">
+    <p class="summary-font-letters" id="students-pending-par-name">Заявок на рассмотрении</p>
+    <p class="summary-font-numbers" id="students-pending-par"></p>
+  </div>
+
+  <div class="summary-piece-div">
+    <p class="summary-font-letters" id="semester-par-name">Семестр</p>
+    <p class="summary-font-numbers" id="semester-par"></p>
+  </div>
+
+  <div class="summary-piece-div">
+    <p class="summary-font-letters" id="students-enrolled-par-name">Студентов зачисленно</p>
+    <p class="summary-font-numbers" id="students-enrolled-par"></p>
   </div>
 </div>
 
 <div id="requirements-anno-notification">
-  <div id="requirements">
-    <p>Requirements</p>
-    <p id="requirements-content"></p>
+  <div class="ran" id="requirements">
+    <div class="ran-header-div">
+      <p class="ran-header">Требования</p>
+    </div>
+    <div class="ran-content-div">
+      <p id="requirements-content"></p>
+    </div>
   </div>
 
-  <div id="anno">
-    <p>Annotations</p>
-    <p id="anno-content"></p>
+  <div class="ran" id="anno">
+    <div class="ran-header-div">
+      <p class="ran-header">Аннотации</p>
+    </div>
+
+    <div class="ran-content-div">
+      <p id="anno-content"></p>
+    </div>
   </div>
 
-  <div id="notifications">
-    <p>Notifications</p>
-    <button class="invisible" id="new-notification">New notification</button>
-    <ul id="notifications-list"></ul>
+  <div class="ran" id="notifications">
+    <div class="ran-header-div">
+      <p class="ran-header">Оповещения</p>
+      <button class="invisible notification-button" id="new-notification">Создать оповещение</button>
+    </div>
+
+    <div class="ran-content-div notifications">
+      <div id="notifications-list"></div>
+    </div>
   </div>
 </div>
 
-<div id="teachers-students">
-  <div id="teachers">
-    <p>Teachers</p>
-    <button class="invisible" id="new-teacher-button">Add new teacher</button>
-    <ul id="teachers-list"></ul>
+
+<div id="teachers-students-2">
+  <div id="teachers" class="ran plus">
+    <div class="ran-header-div">
+      <p class="ran-header">Преподаватели курса</p>
+      <button class="invisible teacher-button" id="new-teacher-button">Добавить преподавателя</button>
+    </div>
+    <div class="ran-content-div notifications">
+      <div id="teachers-list"></div>
+    </div>
   </div>
 
-  <div id="students">
-    <p>Students</p>
-    <ul id="students-list"></ul>
+  <div id="students" class="ran plus">
+    <div class="ran-header-div">
+      <p class="ran-header">Студенты курса</p>
+    </div>
+
+    <div class="ran-content-div notifications">
+      <div id="students-list"></div>
+    </div>
   </div>
 </div>
+
 
 <div id="popup-stack">
 </div>

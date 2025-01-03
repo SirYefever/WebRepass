@@ -2,13 +2,7 @@ import coursesHtml from './courses.html?raw'
 import createPopupHtml from './popups/newCourse.html?raw'
 import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
-import {
-    CampusCourseModel,
-    CourseStatuses,
-    CreateCampusCourseModel,
-    UserModel,
-    UserRoles
-} from "../api/interfaces.ts";
+import {CampusCourseModel, CourseStatuses, CreateCampusCourseModel, UserModel, UserRoles} from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
 
 async function coursesPageConstructor(){
@@ -21,8 +15,10 @@ async function coursesPageConstructor(){
         const createNewButton = document.createElement("button");
         createNewButton?.addEventListener("click", popupCreate);
         createNewButton.textContent = "Add course";
-        const createNewDiv = document.querySelector("#create-new-div");
-        createNewDiv?.appendChild(createNewButton);
+        createNewButton.classList.add("create-new-course-button");
+
+        const nameDiv = document.querySelector("#group-name-div");
+        nameDiv?.appendChild(createNewButton);
     }
     displayCourses(await fetchCourses());
     $(document).ready(function() {
@@ -44,9 +40,6 @@ async function coursesPageConstructor(){
 async function myCoursesPageConstructor(){
     constructPage2(coursesHtml, "/src/courses/courses.css");
     addHtmlToPage(createPopupHtml, "/src/courses/popups/popup.css");
-
-    const groupNamePar = document.getElementById("group-name-par") as HTMLParagraphElement;
-    groupNamePar.textContent = "My Courses";
 
     displayCourses(await myCoursesQuery());
     $(document).ready(function() {
@@ -91,37 +84,67 @@ async function fetchCourses(): Promise<CampusCourseModel[]>{
     throw response;
 }
 
+function mapCourseStatusIntoParElement(status: CourseStatuses, courseNumber: number): string{
+
+    const statusTranslationMap = new Map<string, string>();
+    statusTranslationMap.set("Created", "Создан");
+    statusTranslationMap.set("OpenForAssigning", "Открыт для записи");
+    statusTranslationMap.set("Started", "В процессе обучения");
+    statusTranslationMap.set("Finished", "Закончен");
+
+    if (status === CourseStatuses[CourseStatuses.Created]) {
+        return `<p class="font" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+    }
+    else if (status === CourseStatuses[CourseStatuses.OpenForAssigning]){
+        return `<p class="font green" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+    }
+    else if (status === CourseStatuses[CourseStatuses.Started]){
+        return `<p class="font orange" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+    }
+    else{
+        return `<p class="font dark-red" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+    }
+}
+
 function generateAndFillCourseTemplate(courseNumber: number, data: CampusCourseModel): string {
+
+    const semesterTranslationMap = new Map<string, string>();
+    semesterTranslationMap.set("Autumn", "Осенний");
+    semesterTranslationMap.set("Spring", "Весенний");
+
     const result = `
         <div class="course-div">
+            <div class="course-name-div">
+                <a href="/courses/${data.id}" class="course-name font" id="course-name-${courseNumber}">${data.name}</a>
+            </div>
             <div class="main-part" id="main-part-div-${courseNumber}">
-                <a href="/courses/${data.id}" class="course-name" id="course-name-${courseNumber}">${data.name}</a>
-                <p id="year-${courseNumber}">Year: ${data.startYear}</p>
-                <p id="semester-type-${courseNumber}">Semester: ${data.semester}</p>
-                <p id="slots-overall-${courseNumber}">Overall slots: ${data.maximumStudentsCount}</p>
-                <p id="slots-left-${courseNumber}">Available slots: ${data.remainingSlotsCount}</p>
+                <p class="font" id="year-${courseNumber}">Год обучения: ${data.startYear}</p>
+                <p class="font" id="semester-type-${courseNumber}">Семестр: ${semesterTranslationMap.get(data.semester)}</p>
+                <p class="font" id="slots-overall-${courseNumber}">Всего мест: ${data.maximumStudentsCount}</p>
+                <p class="font" id="slots-left-${courseNumber}">Мест осталось: ${data.remainingSlotsCount}</p>
             </div>
             
-            <div class="course-status" id="course-status-div-${courseNumber}">
-                <p id="course-status-p-${courseNumber}">${data.status}</p>
-            </div>
+            <div class="course-status" id="course-status-div-${courseNumber}">`+
+                mapCourseStatusIntoParElement(data.status, courseNumber) +
+           `</div>
         </div>
         `;
     return result;
 }
 
 function displayCourses(courses: CampusCourseModel[]) {
-    let courseList = document.querySelector("#course-list-ul");
+    let mainCoursesDiv = document.querySelector(".main-courses-div") as HTMLDivElement;
     // @ts-ignore
-    courseList.innerHTML = "";
+    mainCoursesDiv.innerHTML = "";
     let courseNumber = 1;
     courses.forEach(course => {
         if (course.status == CourseStatuses.OpenForAssigning){
             return;
         }
-        const listItem = document.createElement("li");
-        listItem.innerHTML = generateAndFillCourseTemplate(courseNumber, course);
-        courseList?.appendChild(listItem);
+        const courseDiv = document.createElement("div");
+        courseDiv.innerHTML = generateAndFillCourseTemplate(courseNumber, course);
+        // mainCoursesDiv?.appendChild(courseDiv);
+        mainCoursesDiv.innerHTML += (generateAndFillCourseTemplate(courseNumber, course));
     })
 }
 

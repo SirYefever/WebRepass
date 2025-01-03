@@ -54,20 +54,27 @@
 }
 
 .undefined-div{
-    background-color: gray;
+    background-color: white;
+    color: gray;
+    font-family: "Montserrat", serif;
 }
 
 .passed-div{
-    background-color: green;
+    font-family: "Montserrat", serif;
+    color: green;
+    background-color: white;
 }
 
 .failed-div{
-    background-color: darkred;
+    font-family: "Montserrat", serif;
+    background-color: white;
+    color: darkred;
 }
 
 .student-div{
     display: flex;
     justify-content: space-between;
+    border-bottom: #b3b3b3 1px solid;
 }
 
 .accept-button{
@@ -123,14 +130,237 @@
     visibility: hidden;
 }
 
-.important-notify{
-    background-color: palevioletred;
-}
-
 .assign-button{
     background-color: green;
 }
 
 .student-in-queue{
     color: darkgoldenrod;
+}
+
+#course-name{
+    font-family: "Montserrat", serif;
+    font-size: 300%;
+}
+
+.course-name-div{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.summary-piece-div{
+    min-width: 300px;
+    min-height: 150px;
+    border: #b3b3b3 1px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.middle-piece{
+    border-left: none;
+}
+
+#some-summary-info{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#sub-main-container{
+    background-color: #f6f7f9;
+}
+
+.summary-font-numbers{
+    font-family: "Montserrat", serif;
+    color: black;
+    font-size: 160%;
+    font-weight: bold;
+}
+
+.summary-font-letters{
+    font-family: "Montserrat", serif;
+    color: #a1a1a1;
+    font-size: 110%;
+    font-weight: bold;
+}
+
+#summary-redact-button{
+    background-color: #f6f7f9;
+    font-family: "Montserrat", serif;
+    font-size: 200%;
+    border-radius: 10px;
+    border: none;
+}
+#summary-redact-button:hover {
+    border: black 1px solid;
+}
+
+#requirements-anno-notification{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.ran{
+    background-color: white;
+    overflow-y: auto;
+    width: 30%;
+    min-width: 300px;
+    max-height: 300px;
+    min-height: 300px;
+    height: fit-content;
+    margin-top: 20px;
+    box-shadow: 0 0 0 1px rgba(20,20,31,.05),0 2px 7px 1px rgba(20,20,31,.16);
+    border-radius: 0.55rem;
+    background-color: white;
+    border-top-right-radius: 0.55rem;
+    border-bottom-right-radius: 0.55rem;
+}
+
+.ran.plus{
+    width: 47%;
+}
+
+.ran-header{
+    font-family: "Montserrat", serif;
+    font-size: 115%;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.ran-header-div{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: #b3b3b3 1px solid;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.ran-content-div{
+    display: flex;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.ran-content-div.notifications{
+    padding: 0px;
+}
+
+.notif-div{
+    display: flex;
+    border-bottom: #b3b3b3 1px solid;
+    padding: 0px;
+}
+
+.notif-div.important-notify{
+    background-color: rgba(234, 103, 89, 0.7);
+}
+
+#notifications-list{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.notif-text{
+    font-family: "Montserrat", serif;
+    font-size: 120%;
+}
+
+#teachers-students-2{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.student-name-par{
+    font-family: "Montserrat", serif;
+    font-size: 120%;
+}
+
+.teacher-div{
+    display: flex;
+    flex-direction: column;
+    border-bottom: #b3b3b3 1px solid;
+    padding: 0px;
+    width: 100%;
+}
+
+#teachers-list{
+    width: 100%;
+}
+
+#students-list{
+    width: 100%;
+}
+
+.main-teacher-label{
+    color: #00a28a;
+    font-weight: normal;
+    font-family: "Montserrat", serif;
+}
+
+.attestations-div{
+    display: flex;
+    align-items: center;
+}
+
+.attestation-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.attestation-button{
+    background-color: white;
+    font-family: "Montserrat", serif;
+    border: none;
+}
+
+.attestation-button:hover{
+    border: black 1px solid;
+    border-radius: 10px;
+}
+
+.change-status-button{
+    font-family: "Montserrat", serif;
+    border: none;
+    background-color: #f6f7f9;
+}
+.change-status-button:hover{
+    border: black 1px solid;
+    border-radius: 10px;
+}
+
+.teacher-button{
+    font-family: "Montserrat", serif;
+    font-size: 120%;
+    border: none;
+    background-color: white;
+}
+.teacher-button:hover{
+    border: black 1px solid;
+    border-radius: 10px;
+}
+
+.notification-button{
+    font-family: "Montserrat", serif;
+    font-size: 120%;
+    border: none;
+    background-color: white;
+}
+.notification-button:hover{
+    border: black 1px solid;
+    border-radius: 10px;
 }

@@ -72,25 +72,28 @@ async function singleCoursePageConstructor(){
     await updateNotifications(courseData);
 
 
-    const teachersList = document.getElementById("teachers-list") as HTMLUListElement;
+    const teachersList = document.getElementById("teachers-list") as HTMLDivElement;
     teachersList.innerHTML = "";
     courseData.teachers.forEach(teacher => {
-        let listItem = document.createElement("li");
+        let listItem = document.createElement("div");
         listItem.setAttribute("id", "teacher-list-item");
+        listItem.classList.add("teacher-div");
 
         const fullNamePar = document.createElement("p");
-        fullNamePar.textContent = teacher.name;
+        fullNamePar.textContent = teacher.name + " ";
+        fullNamePar.classList.add("student-name-par");
         listItem.appendChild(fullNamePar);
 
         const emailPar = document.createElement("p");
         emailPar.textContent = teacher.email;
+        emailPar.classList.add("student-name-par");
         listItem.appendChild(emailPar);
 
         if (teacher.isMain) {
-            const isMain = document.createElement("div");
-            isMain.classList.add("is-main-div");
-            isMain.textContent = "is main";
-            listItem.appendChild(isMain);
+            const isMainLabel = document.createElement("label");
+            isMainLabel.textContent = "- Главный преподаватель";
+            isMainLabel.classList.add("main-teacher-label");
+            fullNamePar.appendChild(isMainLabel);
         }
 
         teachersList.append(listItem);
@@ -116,10 +119,11 @@ async function updateNotifications(courseData?: CourseInfoModel) {
     const notificationsList = document.getElementById("notifications-list") as HTMLDivElement;
     notificationsList.innerHTML = "";
     courseData.notifications.forEach(notif => {
-        let listItem = document.createElement("li");
         let notifDiv = document.createElement("div");
+        notifDiv.classList.add("notif-div");
 
         const notifText = document.createElement("p");
+        notifText.classList.add("notif-text");
         notifText.textContent = notif.text;
 
         if (notif.isImportant){
@@ -127,9 +131,8 @@ async function updateNotifications(courseData?: CourseInfoModel) {
         }
 
         notifDiv.appendChild(notifText);
-        listItem.appendChild(notifDiv);
 
-        notificationsList.appendChild(listItem);
+        notificationsList.appendChild(notifDiv);
     });
 }
 
@@ -173,13 +176,13 @@ async function constructAndFillSummary() {
     const courseNamePar = document.getElementById("course-name") as HTMLAnchorElement;
     courseNamePar.textContent = courseData.name;
 
-    const nameAndRedactSummaryButtonDiv = document.getElementById("summary-and-redact-button") as HTMLDivElement;
+    const nameAndRedactSummaryButtonDiv = document.querySelector(".course-name-div") as HTMLDivElement;
 
-    const statusDiv = document.querySelector(".status-par-and-button-div") as HTMLDivElement;
+    const statusDiv = document.querySelector("#status-piece-div") as HTMLDivElement;
     if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher) {
         if (document.getElementById("summary-redact-button") === null){
             const summaryRedactButton = document.createElement("button");
-            summaryRedactButton.textContent = "Redact course info";
+            summaryRedactButton.textContent = "Редактировать курс";
             summaryRedactButton.id = "summary-redact-button";
             summaryRedactButton.addEventListener("click", () => {
                 // popupRedactSummary();//TODO change?
@@ -190,7 +193,8 @@ async function constructAndFillSummary() {
 
         if (document.getElementById("redact-status-button") === null){
             const redactStatusButton = document.createElement("button");
-            redactStatusButton.textContent = "Change status";
+            redactStatusButton.classList.add("change-status-button");
+            redactStatusButton.textContent = "Изменить статус";
             redactStatusButton.id = "redact-status-button";
             redactStatusButton.addEventListener("click", () => {
                 popupRedactStatus();
@@ -222,15 +226,28 @@ async function constructAndFillSummary() {
     }
 
 
+    const statusTranslationMap = new Map<string, string>();
+    statusTranslationMap.set("Created", "Создан");
+    statusTranslationMap.set("OpenForAssigning", "Открыт для записи");
+    statusTranslationMap.set("Started", "В процессе обучения");
+    statusTranslationMap.set("Finished", "Закончен");
 
     const statusPar = document.getElementById("status-par") as HTMLParagraphElement;
-    statusPar.textContent = "Status: " + courseData.status;
+    // @ts-ignore
+    statusPar.textContent = statusTranslationMap.get(courseData.status);
     const yearPar = document.getElementById("year-par") as HTMLParagraphElement;
-    yearPar.textContent = "Year: " + courseData.startYear.toString();
+    yearPar.textContent = courseData.startYear.toString();
     const totalCountPar = document.getElementById("total-count-par") as HTMLParagraphElement;
-    totalCountPar.textContent = "Maximum students: " + courseData.maximumStudentsCount.toString();
+    totalCountPar.textContent = courseData.maximumStudentsCount.toString();
+
+
+    const semesterTranslationMap = new Map<string, string>();
+    semesterTranslationMap.set("Autumn", "Осенний");
+    semesterTranslationMap.set("Spring", "Весенний");
+
     const semesterPar = document.getElementById("semester-par") as HTMLParagraphElement;
-    semesterPar.textContent = "Semester: " + courseData.semester;
+    // @ts-ignore
+    semesterPar.textContent = semesterTranslationMap.get(courseData.semester);
 
     const requirementsPar = document.getElementById("requirements-content") as HTMLDivElement;
     requirementsPar.innerHTML = await marked(courseData.requirements);
@@ -245,35 +262,29 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
         courseDataInput = await getCourseInfoQuery() as CourseInfoModel;
     }
 
-    const studentsList = document.getElementById("students-list") as HTMLUListElement;
+    const studentsList = document.getElementById("students-list") as HTMLDivElement;
     studentsList.innerHTML = "";
     let studentsEnrolled = 0;
     let studentsInQueue = 0;
     courseDataInput.students.forEach(async(student) =>  {
         if (student.status === StudentStatuses[StudentStatuses.Accepted]) {
             studentsEnrolled++;
-            let listItem = document.createElement("li");
-            listItem.appendChild(await createAndFillUserTemplate(student));
-            studentsList.appendChild(listItem);
+            studentsList.appendChild(await createAndFillUserTemplate(student));
         } else if (student.status === StudentStatuses[StudentStatuses.InQueue]){
             studentsInQueue++;
             if (userRolesForCourse.userAuthority >= UserAuthority.MainTeacher){
-                let listItem = document.createElement("li");
-                listItem.appendChild(await createAndFillUserTemplate(student));
-                studentsList.appendChild(listItem);
+                studentsList.appendChild(await createAndFillUserTemplate(student));
             }
         } else if (student.status === StudentStatuses[StudentStatuses.Declined]){
-            let listItem = document.createElement("li");
-            listItem.appendChild(await createAndFillUserTemplate(student));
-            studentsList.appendChild(listItem);
+            studentsList.appendChild(await createAndFillUserTemplate(student));
         }
     })
 
     const pendingPar = document.getElementById("students-pending-par") as HTMLParagraphElement;
     const enrolledPar = document.getElementById("students-enrolled-par") as HTMLParagraphElement;
 
-    enrolledPar.textContent = "Students enrolled: " + studentsEnrolled.toString();
-    pendingPar.textContent = "Pending requests: " + studentsInQueue.toString();
+    enrolledPar.textContent = studentsEnrolled.toString();
+    pendingPar.textContent = studentsInQueue.toString();
 }
 
 
@@ -281,11 +292,12 @@ async function constructStudentsUl(courseDataInput?: CourseInfoModel){
 async function createAndFillUserTemplate(studentData: StudentDataModel){
     const namePar = document.createElement("p");
     namePar.textContent = studentData.name;
-    namePar.classList.add("student-name-par")
+    namePar.classList.add("student-name-par");
 
     const statusPar = document.createElement("p");
-    statusPar.textContent = `Status: ${studentData.status}`;
+    statusPar.textContent = `Статуc: ${studentData.status}`;
     statusPar.classList.add("student-status-par")
+    statusPar.classList.add("student-name-par")
     if (studentData.status === StudentStatuses[StudentStatuses.Accepted]) {
         statusPar.classList.add("student-accepted");
     } else if (studentData.status === StudentStatuses[StudentStatuses.InQueue]){
@@ -297,6 +309,7 @@ async function createAndFillUserTemplate(studentData: StudentDataModel){
     const emailPar = document.createElement("p");
     emailPar.textContent = studentData.email;
     emailPar.classList.add("student-email-par");
+    emailPar.classList.add("student-name-par");
 
 
     const studentDiv = document.createElement("div");
@@ -334,9 +347,11 @@ async function manageAcceptedStudentStatus(studentData: StudentDataModel): Promi
         attestationsDiv.classList.add("attestations-div");
 
         const intermediateAttestationDiv = document.createElement("div");
+        intermediateAttestationDiv.classList.add("attestation-div");
         let intermediateAttestation = document.createElement("p");
-        intermediateAttestation.textContent = "Intermediate attestation - ";
+        intermediateAttestation.textContent = "Промежуточная аттестация";
         intermediateAttestation.id = `par-${studentData.id}`;
+        intermediateAttestation.classList.add("student-name-par");
 
         intermediateAttestationDiv.appendChild(intermediateAttestation);
         // @ts-ignore
@@ -344,9 +359,11 @@ async function manageAcceptedStudentStatus(studentData: StudentDataModel): Promi
         attestationsDiv.appendChild(intermediateAttestationDiv);
 
         const finalAttestationDiv = document.createElement("div");
+        finalAttestationDiv.classList.add("attestation-div");
         const finalAttestation = document.createElement("p");
-        finalAttestation.textContent = "Final attestation - ";
+        finalAttestation.textContent = "Итоговая аттестация";
         finalAttestationDiv.appendChild(finalAttestation);
+        finalAttestation.classList.add("student-name-par");
         // @ts-ignore
         finalAttestationDiv.appendChild(createAttestationStatusDiv(Mark[studentData.finalResult]));
         attestationsDiv.appendChild(finalAttestationDiv);
@@ -359,8 +376,10 @@ async function manageAcceptedStudentStatus(studentData: StudentDataModel): Promi
         attestationsDiv.classList.add("attestations-div");
 
         const intermediateAttestationDiv = document.createElement("div");
+        intermediateAttestationDiv.classList.add("attestation-div");
         let intermediateAttestation = document.createElement("button");
-        intermediateAttestation.textContent = "Intermediate attestation - ";
+        intermediateAttestation.classList.add("attestation-button");
+        intermediateAttestation.textContent = "Промежуточная аттестация";
         intermediateAttestation.id = `button-${studentData.id}`;
         intermediateAttestation?.addEventListener("click", () => toggleRedactMarkPopupOn(MarkType.Midterm, studentData));//TODO: change the function
 
@@ -370,8 +389,10 @@ async function manageAcceptedStudentStatus(studentData: StudentDataModel): Promi
         attestationsDiv.appendChild(intermediateAttestationDiv);
 
         const finalAttestationDiv = document.createElement("div");
+        finalAttestationDiv.classList.add("attestation-div");
         const finalAttestation = document.createElement("button");
-        finalAttestation.textContent = "Final attestation - ";
+        finalAttestation.classList.add("attestation-button");
+        finalAttestation.textContent = "Итоговая аттестация";
         finalAttestation.onclick = () => toggleRedactMarkPopupOn(MarkType.Final, studentData);
         finalAttestationDiv.appendChild(finalAttestation);
         // @ts-ignore
@@ -414,13 +435,13 @@ function createAttestationStatusDiv(mark: Mark){
     div.classList.add("mark-div");
     if (mark === Mark.NotDefined){
         div.classList.add("undefined-div");
-        div.textContent = "No mark"
+        div.textContent = "Отметка отсутсвует"
     } else if (mark === Mark.Passed){
         div.classList.add("passed-div");
-        div.textContent = "Success"
+        div.textContent = "Зачет"
     } else {
         div.classList.add("failed-div");
-        div.textContent = "Failed"
+        div.textContent = "Провал"
     }
 
     return div;
