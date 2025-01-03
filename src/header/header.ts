@@ -67,25 +67,16 @@ export default function headerBuilder(): HTMLDivElement {
     websiteNameAnchor.id = "website-name-anchor";
 
     const firstNameSpan = document.createElement("span");
-    firstNameSpan.textContent = "Za";
+    firstNameSpan.textContent = "Кам";
     firstNameSpan.classList.add("yellow-text");
 
     const secondNameSpan = document.createElement("span");
-    secondNameSpan.textContent = "l";
+    secondNameSpan.textContent = "пусные курсы";
     secondNameSpan.classList.add("white-text");
 
-    const thirdNameSpan = document.createElement("span");
-    thirdNameSpan.textContent = "oo";
-    thirdNameSpan.classList.add("yellow-text");
-
-    const fourthNameSpan = document.createElement("span");
-    fourthNameSpan.textContent = "per";
-    fourthNameSpan.classList.add("white-text");
 
     websiteNameAnchor.appendChild(firstNameSpan);
     websiteNameAnchor.appendChild(secondNameSpan);
-    websiteNameAnchor.appendChild(thirdNameSpan);
-    websiteNameAnchor.appendChild(fourthNameSpan);
     websiteNameAnchor.href = "/"
 
     leftHeaderDiv.appendChild(websiteNameAnchor);
@@ -256,6 +247,14 @@ export default function headerBuilder(): HTMLDivElement {
 
         rightHeaderDiv.appendChild(profileAnchor);
         rightHeaderDiv.appendChild(logoutAnchor);
+
+        const logoutAnchorBlack = document.createElement("a");
+        logoutAnchorBlack.href = "/login";
+        logoutAnchorBlack.classList.add("logout-anchor-black");
+        logoutAnchorBlack.textContent = "Выход";
+        logoutAnchorBlack.onclick = clearLocalStorage;
+
+        sideBarDiv.appendChild(logoutAnchorBlack);
     } else {
         const regLink = document.createElement("a");
         const logInLink = document.createElement("a");
@@ -272,12 +271,28 @@ export default function headerBuilder(): HTMLDivElement {
         logInLink.classList.add("headerAnchor");
         div.appendChild(middleHeaderDiv);
         div.appendChild(rightHeaderDiv);
+
+        const regLinkBlack = document.createElement("a");
+        const logInLinkBlack = document.createElement("a");
+
+        regLinkBlack.textContent = "Регистрация";
+        regLinkBlack.href = "/registration"
+        regLinkBlack.classList.add("logout-anchor-black");
+
+        logInLinkBlack.textContent = "Вход";
+        logInLinkBlack.href = "/login"
+        logInLinkBlack.classList.add("logout-anchor-black");
+        div.appendChild(middleHeaderDiv);
+        div.appendChild(rightHeaderDiv);
+
+        sideBarDiv.appendChild(logInLinkBlack);
+        sideBarDiv.appendChild(regLinkBlack);
     }
     return div;
 }
 
 function shortcutString(str: string, maxLength: number = 15){
-    if (str.length > maxLength){
+    if (str.length < maxLength){
         return str;
     }
     return str.substring(0, maxLength);

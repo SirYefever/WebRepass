@@ -1,5 +1,5 @@
 <div id="mainContainer">
-    <div class="flexContainer">
+    <div class="flex-container">
         <div class="reg-div">
             <p class="reg-par">Регистрация нового пользователя</p>
 
@@ -16,13 +16,16 @@
 
             </select>
             <p class="black-text" >Пароль</p>
-            <input class="regInput" id="password-input">
+            <input type="password" class="regInput" id="password-input">
 
             <p class="black-text">Повторите пароль</p>
-            <input class="regInput" id="confirm-password-input">
+            <input type="password" class="regInput" id="confirm-password-input">
 
-            <button class="lightBlueButton" id="reg-button">Зарегестрироваться</button>
+            <button class="light-green-button" id="reg-button">Зарегестрироваться</button>
         </div>
     </div>
+</div>
+
+<div id="popup-stack">
 </div>
 <script type="module" src="/src/index.ts"></script>

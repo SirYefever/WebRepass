@@ -1,10 +1,11 @@
 
 import profileHTML from './profile.html?raw'
-import {constructPage2, makeSubMainContainerVisible} from '../index/index'
+import {constructPage2, loadCSS, makeSubMainContainerVisible} from '../index/index'
 import { ProfileData } from "../LocalDataStorage.ts";
 import {ProfileApiResponse as ProfileApiInterface} from '../api/interfaces.ts';
 import { AuthData } from '../LocalDataStorage.ts';
 import {getCurrentUserProfileInfoQuery} from "../queries/accountQueries.ts";
+import {toggleFailurePopup} from "../defaultPopups/defaultPopups.ts";
 
 async function redactProfileLogic() {
     const profileData = new ProfileData();
@@ -28,6 +29,8 @@ async function profilePutRequest(newProfileData: ProfileApiInterface)  {
     })
     if (response.ok) {
         return (await response.json()) as ProfileApiInterface;
+    }else{
+        toggleFailurePopup();
     }
     throw response;
 }
@@ -49,6 +52,7 @@ async function profileConstructor() {
         return;
     }
     constructPage2(profileHTML, "/src/profile/profile.css");
+    loadCSS("/src/defaultPopups/defaultPopups.css");
 
     const emailPar = document.getElementById('user-email-par') as HTMLParagraphElement;
     emailPar.textContent = profileData.email;

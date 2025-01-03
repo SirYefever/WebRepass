@@ -19,7 +19,12 @@
 }
 
 .failure-div .failure-popup-span{
-    background-color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Montserrat", serif;
+    font-size: 150%;
+    background-color: #ea6759;
     left: 80%;
     top: 12%;
     width: 10%;
@@ -27,7 +32,7 @@
 }
 
 .success-div .success-popup-span{
-    background-color: green;
+    background-color: #00a28a;
     left: 80%;
     top: 12%;
     width: 10%;
@@ -178,4 +183,14 @@
 #gcdf2h{
     display: flex;
     flex-direction: column;
+}
+
+#popup-stack{
+    position: sticky;
+    display: flex;
+    flex-direction: column;
+    left: 80%;
+    top: 12%;
+    width: 15%;
+    height: 5%;
 }

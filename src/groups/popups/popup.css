@@ -18,36 +18,68 @@
     position: fixed;
 }
 
-.failure-div .failure-popup-span{
-    background-color: red;
-    left: 80%;
-    top: 12%;
-    width: 10%;
-    height: 5%;
+.default-popup-button{
+    font-family: "Montserrat", serif;
+    font-size: 150%;
+    color: black;
+    background-color: white;
+    border: none;
+}
+.confirm:hover {
+    border: #00a28a 1px solid;
+    border-radius: 10px;
+}
+.cancel:hover {
+    border: #ea6759 1px solid;
+    border-radius: 10px;
 }
 
-.success-div .success-popup-span{
-    background-color: green;
-    left: 80%;
-    top: 12%;
-    width: 10%;
-    height: 5%;
+.default-popup-text-size{
+    font-size: 150%;
+}
+
+.font{
+    font-family: "Montserrat", serif;
+    color: black;
+}
+
+.popup-header-default{
+    font-size: 200%;
+}
+
+.popup-span-default{
+    background-color: white;
+    box-shadow: 0 0 0 1px rgba(20,20,31,.05),0 2px 7px 1px rgba(20,20,31,.16);
+    border-radius: .25rem;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 80%;
 }
 
 #new-popup-div #create-popup-span{
-    background-color: black;
     left: 15%;
     top: 15%;
     width: 70%;
     height: 40%;
 }
 
+.test{
+    left: 0%;
+    right: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: red;
+}
+
 #delete-popup-div #delete-popup-span{
-    background-color: black;
-    left: 15%;
+    background-color: white;
+    left: 35%;
     top: 15%;
-    width: 70%;
-    height: 40%;
+    width: 30%;
+    height: 15%;
 }
 
 #redact-popup-div #redact-popup-span{
