@@ -1,38 +1,36 @@
 <div class="popup" id="new-popup-div">
-    <span class="popuptext" id="create-popup-span">
+    <span class="popuptext font popup-span-default course-form" id="create-popup-span">
 
-    <p>Create new course</p>
+    <p class="popup-header-default font">Создание нового курса</p>
 
-    <p>Course name</p>
+    <p class="font default-popup-text-size">Название курса:</p>
     <input class="black-text" id="new-course-name">
 
-    <p>StartYear</p>
+    <p class="font default-popup-text-size">Год начала курса:</p>
     <input class="black-text" id="new-course-start-year">
 
-    <p>MaximumStudentCount</p>
+    <p class="font default-popup-text-size">Максимальное число студентов:</p>
     <input class="black-text" id="new-course-maximum-student-count">
 
-    <p>Semester</p>
+    <p class="font default-popup-text-size">Семестр:</p>
     <div class="center-div" id="semester-div">
-        <label>
-            Autumn
+        <label class="font">
+            Осень
             <input id="autumn" type="checkbox" content="autumn">
         </label>
 
-        <label>
-            Spring
+        <label class="font">
+            Весна
             <input id="spring" type="checkbox">
         </label>
     </div>
 
-        <p>Requirements</p>
+        <p>Требования:</p>
         <textarea id="requirements-div"></textarea>
-<!--        <div id="requirements-div" class="text-editor-div summernote"></div>-->
-        <p>Annotations</p>
+        <p>Аннотации:</p>
         <textarea id="annotations-div"></textarea>
-<!--        <div id="annotations-div" class="text-editor-div summernote"></div>-->
 
-        <p>Main teacher</p>
+        <p class="font default-popup-text-size">Главный учитель:</p>
         <div class="center-div">
             <select id="teacher-select"></select>
             <input type="text" id="teacher-name-input">
@@ -40,8 +38,8 @@
         </select>
 
         <div>
-            <button id="confirm-create-button">Save</button>
-            <button id="cancel-create-button">Cancel</button>
+            <button class="default-popup-button confirm" id="confirm-create-button">Save</button>
+            <button class="default-popup-button cancel" id="cancel-create-button">Cancel</button>
         </div>
 
     </span>

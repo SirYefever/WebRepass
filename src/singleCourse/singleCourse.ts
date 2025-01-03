@@ -5,7 +5,7 @@ import redactSummaryTeacherHtml from './popups/redactSummaryTeacher.html?raw'
 import redactSummaryAdminHtml from './popups/redactSumarryAdmin.html?raw'
 import newTeacherHtml from './popups/newTeacherPopup.html?raw'
 import newNotificationHtml from './popups/newNotification.html?raw'
-import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
+import {addHtmlToPage, constructPage2, loadCSS, makeSubMainContainerVisible} from "../index";
 import {
     CourseInfoModel,
     Mark,
@@ -39,6 +39,7 @@ async function singleCoursePageConstructor(){
     addHtmlToPage(redactSummaryTeacherHtml);
     addHtmlToPage(newTeacherHtml);
     addHtmlToPage(newNotificationHtml);
+    loadCSS("/src/defaultPopups/defaultPopups.css");
 
 
     courseData = await getCourseInfoQuery() as CourseInfoModel;

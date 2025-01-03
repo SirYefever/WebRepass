@@ -1,20 +1,22 @@
 import coursesHtml from './courses.html?raw'
 import createPopupHtml from './popups/newCourse.html?raw'
-import {addHtmlToPage, constructPage2, makeSubMainContainerVisible} from "../index";
+import {addHtmlToPage, constructPage2, loadCSS, makeSubMainContainerVisible} from "../index";
 import {getUserRoles} from "../utils/utils.ts";
 import {CampusCourseModel, CourseStatuses, CreateCampusCourseModel, UserModel, UserRoles} from "../api/interfaces.ts";
 import {AuthData} from "../LocalDataStorage.ts";
+import {toggleFailurePopup, toggleSuccessPopup} from "../defaultPopups/defaultPopups.ts";
 
 async function coursesPageConstructor(){
     constructPage2(coursesHtml, "/src/courses/courses.css");
     addHtmlToPage(createPopupHtml, "/src/courses/popups/popup.css");
+    loadCSS("/src/defaultPopups/defaultPopups.css");
     initPopupCreate();
     const curUserRoles = await getUserRoles() as UserRoles;
 
     if (curUserRoles.isAdmin){
         const createNewButton = document.createElement("button");
         createNewButton?.addEventListener("click", popupCreate);
-        createNewButton.textContent = "Add course";
+        createNewButton.textContent = "Создать курс";
         createNewButton.classList.add("create-new-course-button");
 
         const nameDiv = document.querySelector("#group-name-div");
@@ -92,17 +94,23 @@ function mapCourseStatusIntoParElement(status: CourseStatuses, courseNumber: num
     statusTranslationMap.set("Started", "В процессе обучения");
     statusTranslationMap.set("Finished", "Закончен");
 
+    // @ts-ignore
     if (status === CourseStatuses[CourseStatuses.Created]) {
         return `<p class="font" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
     }
-    else if (status === CourseStatuses[CourseStatuses.OpenForAssigning]){
-        return `<p class="font green" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
-    }
-    else if (status === CourseStatuses[CourseStatuses.Started]){
-        return `<p class="font orange" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
-    }
-    else{
-        return `<p class="font dark-red" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+    else { // @ts-ignore
+        if (status === CourseStatuses[CourseStatuses.OpenForAssigning]){
+                return `<p class="font green" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+            }
+            else { // @ts-ignore
+            if (status === CourseStatuses[CourseStatuses.Started]){
+                            return `<p class="font orange" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+                        }
+                        else{
+                            // @ts-ignore
+                return `<p class="font dark-red" id="course-status-p-${courseNumber}">${statusTranslationMap.get(status)}</p>`;
+                        }
+        }
     }
 }
 
@@ -271,86 +279,6 @@ function cancelCourseCreation(){
 }
 
 
-
-function toggleSuccessPopup(){
-    const failurePopup = document.getElementById("failure-div")
-    if (failurePopup){
-        failurePopup.remove();
-    }
-    const successPopup = document.getElementById("success-div")
-    if (successPopup){
-        successPopup.remove();
-    }
-
-    var popupDiv = document.createElement("div");
-    popupDiv.classList.add("popup");
-    popupDiv.classList.add("success-div");
-    popupDiv.id = "success-div";
-
-    var popupSpan = document.createElement("span");
-    popupSpan.classList.add("popuptext");
-    popupSpan.classList.add("success-popup-span");
-    popupSpan.id = "success-popup-span";
-
-    var popupPar = document.createElement("p");
-    popupPar.textContent = "Success";
-
-    popupSpan.appendChild(popupPar);
-    popupDiv.appendChild(popupSpan);
-
-    const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
-    popupStack?.appendChild(popupDiv);
-
-    popupSpan?.classList.toggle("show");
-    setTimeout(() => {
-        popupSpan?.classList.add("fade-out");
-        setTimeout(() => {
-            popupSpan?.classList.toggle("show")
-            popupSpan?.classList.remove("fade-out");
-            popupDiv.remove();
-        }, 500);
-    }, 1500);
-}
-
-function toggleFailurePopup(){
-    const failurePopup = document.getElementById("failure-div")
-    if (failurePopup){
-        failurePopup.remove();
-    }
-    const successPopup = document.getElementById("success-div")
-    if (successPopup){
-        successPopup.remove();
-    }
-
-    var popupDiv = document.createElement("div");
-    popupDiv.classList.add("popup");
-    popupDiv.classList.add("failure-div");
-    popupDiv.id = "failure-div";
-
-    var popupSpan = document.createElement("span");
-    popupSpan.classList.add("popuptext");
-    popupSpan.classList.add("failure-popup-span");
-    popupSpan.id = "failure-popup-span";
-
-    var popupPar = document.createElement("p");
-    popupPar.textContent = "Fail";
-
-    popupSpan.appendChild(popupPar);
-    popupDiv.appendChild(popupSpan);
-
-    const popupStack = document.getElementById("popup-stack") as HTMLDivElement;
-    popupStack?.appendChild(popupDiv);
-
-    popupSpan?.classList.toggle("show");
-    setTimeout(() => {
-        popupSpan?.classList.add("fade-out");
-        setTimeout(() => {
-            popupSpan?.classList.toggle("show")
-            popupSpan?.classList.remove("fade-out");
-            popupDiv.remove();
-        }, 500);
-    }, 1500);
-}
 
 function manageCheckingSpring(){
     const autumn = document.getElementById("autumn") as HTMLInputElement;

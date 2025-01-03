@@ -18,24 +18,7 @@
     position: fixed;
 }
 
-.failure-div .failure-popup-span{
-    background-color: red;
-    left: 80%;
-    top: 12%;
-    width: 10%;
-    height: 5%;
-}
-
-.success-div .success-popup-span{
-    background-color: green;
-    left: 80%;
-    top: 12%;
-    width: 10%;
-    height: 5%;
-}
-
 #new-popup-div #create-popup-span{
-    background-color: black;
     left: 15%;
     top: 15%;
     width: 70%;
@@ -107,4 +90,65 @@
 
 .black-text{
     color: black;
+}
+
+.default-popup-button{
+    font-family: "Montserrat", serif;
+    font-size: 150%;
+    color: black;
+    background-color: white;
+    border: none;
+}
+.confirm:hover {
+    border: #00a28a 1px solid;
+    border-radius: 10px;
+}
+.cancel:hover {
+    border: #ea6759 1px solid;
+    border-radius: 10px;
+}
+
+.default-popup-text-size{
+    font-size: 150%;
+}
+
+.font{
+    font-family: "Montserrat", serif;
+    color: black;
+}
+
+.popup-header-default{
+    font-size: 200%;
+}
+
+.popup-span-default{
+    background-color: white;
+    box-shadow: 0 0 0 1px rgba(20,20,31,.05),0 2px 7px 1px rgba(20,20,31,.16);
+    border-radius: .25rem;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 80%;
+}
+
+.checkbox{
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+#teacher-select{
+    background-color: white;
+    color: black;
+    font-family: "Montserrat", serif;
+    border: #b3b3b3 solid 1px;
+}
+
+#semester-div{
+    gap: 10px;
+}
+
+.course-form{
+    overflow-y: auto;
 }

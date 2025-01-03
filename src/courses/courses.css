@@ -82,13 +82,14 @@
 }
 
 .orange{
-    color: #d46a00;
+    color: #d46a00 !important;
 }
 
 .dark-red{
-    color: #bf0000;
+    color: #bf0000 !important;
 }
 
 .green{
-    color: #006e12;
+    color: #006e12 !important;
 }
+
