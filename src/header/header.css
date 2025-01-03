@@ -164,8 +164,8 @@
     align-items: center;
     justify-content: flex-end;
     margin-right: 1%;
+    gap: 17px;
 }
-
 
 .header-image{
     width: 100%;
@@ -337,4 +337,6 @@
         align-self: center;
     }
 }
+
+
 

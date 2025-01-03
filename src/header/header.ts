@@ -1,4 +1,4 @@
-import { AuthData } from '../LocalDataStorage'
+import {AuthData, LocalDataStorage} from '../LocalDataStorage'
 import { ProfileData } from '../LocalDataStorage'
 import {k} from "vite/dist/node/types.d-aGj9QkWt";
 
@@ -228,6 +228,7 @@ export default function headerBuilder(): HTMLDivElement {
         const logoutAnchor = document.createElement("a");
         logoutAnchor.href = "/login";
         logoutAnchor.classList.add("headerAnchor");
+        logoutAnchor.classList.add("logout-anchor");
         logoutAnchor.textContent = "Выход";
         logoutAnchor.onclick = clearLocalStorage;
 
@@ -250,10 +251,11 @@ export default function headerBuilder(): HTMLDivElement {
         profileDivBlack.appendChild(profileParagraphBlack);
         profileAnchorBlack.appendChild(profileDivBlack);
 
+
         upperDiv.appendChild(profileAnchorBlack);
 
         rightHeaderDiv.appendChild(profileAnchor);
-        // rightHeaderDiv.appendChild(logoutAnchor);
+        rightHeaderDiv.appendChild(logoutAnchor);
     } else {
         const regLink = document.createElement("a");
         const logInLink = document.createElement("a");
