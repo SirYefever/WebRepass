@@ -18,11 +18,14 @@ async function groupsPageConstructor(){
         initPopupCreate();
         initPopupRedact();
         initPopupDelete();
+
         const createNewButton = document.createElement("button");
         createNewButton?.addEventListener("click", toggleCreatePopup);
         createNewButton.textContent = "Add Group";
-        const createNewDiv = document.querySelector("#create-new-div");
-        createNewDiv?.appendChild(createNewButton);
+        createNewButton.classList.add("create-new-group-button");
+
+        const nameDiv = document.querySelector(".name-div");
+        nameDiv?.appendChild(createNewButton);
     }
     await displayGroupList();
     makeSubMainContainerVisible();
@@ -30,31 +33,70 @@ async function groupsPageConstructor(){
 
 async function displayGroupList(){
     const curUserRoles = await getUserRoles() as UserRoles;
-    const groupList = document.querySelector("#group-list") as HTMLUListElement;
-    groupList.innerHTML = "";
+    const groupsDiv = document.querySelector("#main-groups-div-id") as HTMLDivElement;
+    groupsDiv.innerHTML = "";
     const groups = await getGroups() as Group[];
     groups.forEach(group => {
         const groupLink = document.createElement("a");
+        groupLink.classList.add("group-link");
         groupLink.id = "groupId=" + group.id;
         groupLink.href = `/groups/${group.id}`;
         groupLink.textContent = group.name;
 
         const linkDiv = document.createElement("div");
+        linkDiv.classList.add("link-div");
         linkDiv.appendChild(groupLink);
 
         if (curUserRoles.isAdmin)
         {
+            const buttonsDiv = document.createElement("div");
+            buttonsDiv.classList.add("buttons-div");
+
             const redactButton = document.createElement("button");
             redactButton.addEventListener("click", () => toggleRedactPopupOn(group.id));
             redactButton.textContent = "Redact";
-            linkDiv.appendChild(redactButton);
+            redactButton.classList.add("groups-button");
+
 
             const deleteButton = document.createElement("button");
             deleteButton.addEventListener("click", ()=> toggleDeletePopupOn(group.id));
             deleteButton.textContent = "Delete";
-            linkDiv.appendChild(deleteButton);
+            deleteButton.classList.add("groups-button");
+
+            buttonsDiv.appendChild(redactButton);
+            buttonsDiv.appendChild(deleteButton);
+
+            linkDiv.appendChild(buttonsDiv);
+
+            redactButton.addEventListener("mouseenter", () => {
+                const color = "#5f4b8b";
+                linkDiv.style.backgroundColor = color;
+                redactButton.style.backgroundColor = color;
+                deleteButton.style.backgroundColor = color;
+                groupLink.style.color = "white";
+            });
+            redactButton.addEventListener("mouseleave", () => {
+                linkDiv.style.backgroundColor = "";
+                redactButton.style.backgroundColor = "";
+                deleteButton.style.backgroundColor = "";
+                groupLink.style.color = "";
+            });
+
+            deleteButton.addEventListener("mouseenter", () => {
+                const color = "#ea6759";
+                linkDiv.style.backgroundColor = color;
+                redactButton.style.backgroundColor = color;
+                deleteButton.style.backgroundColor = color;
+                groupLink.style.color = "white";
+            });
+            deleteButton.addEventListener("mouseleave", () => {
+                linkDiv.style.backgroundColor = "";
+                redactButton.style.backgroundColor = "";
+                deleteButton.style.backgroundColor = "";
+                groupLink.style.color = "";
+            });
         }
-        groupList.appendChild(linkDiv);
+        groupsDiv.appendChild(linkDiv);
     })
 }
 

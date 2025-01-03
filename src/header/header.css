@@ -301,7 +301,7 @@
     color: black;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 768px) {
     .groups-par{
         font-size: 120%;
         color: black;
