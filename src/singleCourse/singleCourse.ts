@@ -206,7 +206,7 @@ async function constructAndFillSummary() {
     } else if (userRolesForCourse.userAuthority <= UserAuthority.InQueue){
         if (document.getElementById("assign-button") === null){
             const assignButton = document.createElement("button");
-            assignButton.textContent = "Assign for course";
+            assignButton.textContent = "Записаться на курс";
             assignButton.classList.add("assign-button");
             assignButton.id = "assign-button";
             if (userRolesForCourse.userAuthority === UserAuthority.InQueue){

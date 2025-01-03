@@ -73,8 +73,16 @@ async function changeCourseStatus(): Promise<void>{
       if (response.ok) {
             togglePopup();
             toggleSuccessPopup();
+
+            const statusTranslationMap = new Map<number, string>();
+            statusTranslationMap.set(0, "Создан");
+            statusTranslationMap.set(1, "Открыт для записи");
+            statusTranslationMap.set(2, "В процессе обучения");
+            statusTranslationMap.set(3, "Закончен");
+
             const statusPar = document.getElementById("status-par") as HTMLParagraphElement;
-            statusPar.textContent = "Status:" + CourseStatuses[requestBody.status];
+            // @ts-ignore
+            statusPar.textContent = statusTranslationMap.get(requestBody.status);
       }
       else {
             toggleFailurePopup();

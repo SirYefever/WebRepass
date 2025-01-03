@@ -78,24 +78,39 @@
 }
 
 .accept-button{
-    background-color: green;
-    color: white;
-    width: fit-content;
-    height: fit-content;
-    font-weight: bold;
+    font-family: "Montserrat", serif;
+    font-size: 120%;
+    border: none;
+    background-color: white;
+    color: #00a28a;
+    width: 40%;
+    height: 40px;
+}
+.accept-button:hover{
+    background-color: #f6f7f9;
+    border-radius: 10px;
 }
 
 .decline-button{
-    background-color: red;
-    color: white;
-    width: fit-content;
-    height: fit-content;
-    font-weight: bold;
+    font-family: "Montserrat", serif;
+    font-size: 120%;
+    border: none;
+    background-color: white;
+    color: #ed6759;
+    width: 40%;
+    height: 40px;
+}
+.decline-button:hover{
+    background-color: #f6f7f9;
+    border-radius: 10px;
 }
 
 .queued-student-div{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex: 2;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .status-par-and-redact-button-div{
@@ -131,7 +146,14 @@
 }
 
 .assign-button{
-    background-color: green;
+    font-family: "Montserrat", serif;
+    border: none;
+    background-color: #f6f7f9;
+    font-size: 120%;
+}
+.assign-button:hover{
+    border: black 1px solid;
+    border-radius: 10px;
 }
 
 .student-in-queue{
