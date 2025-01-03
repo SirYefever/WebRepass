@@ -59,6 +59,20 @@
     max-height: 80%;
 }
 
+#new-group-name{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    color: black;
+    font-family: "Montserrat", serif;
+}
+
+#new-name{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    color: black;
+    font-family: "Montserrat", serif;
+}
+
 #new-popup-div #create-popup-span{
     left: 15%;
     top: 15%;
@@ -83,7 +97,6 @@
 }
 
 #redact-popup-div #redact-popup-span{
-    background-color: black;
     left: 15%;
     top: 15%;
     width: 70%;
